@@ -1,7 +1,7 @@
 /** Site-wide configuration */
 export const SITE = {
-  name: 'FixMyText',
-  url: 'https://fixmytext.com',
+  name: 'FixMyString',
+  url: 'https://fixmystring.com',
   description: 'Free online text tools — word counter, case converter, text cleaner, and more. Fast, private, no sign-up required.',
 };
 
