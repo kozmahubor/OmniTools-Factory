@@ -2,6 +2,7 @@
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import AdSlot from './AdSlot.astro';
+import CookieConsent from './CookieConsent.astro';
 
 interface Props {
   title: string;
@@ -137,5 +138,6 @@ const appSchema = JSON.stringify({
 
     <AdSlot position="bottom" />
     <Footer siteName={siteName} siteUrl={siteUrl} />
+    <CookieConsent />
   </body>
 </html>

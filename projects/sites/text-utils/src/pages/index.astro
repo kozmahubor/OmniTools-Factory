@@ -5,6 +5,7 @@ import Header from '@adsites/ui-kit/Header.astro';
 import Footer from '@adsites/ui-kit/Footer.astro';
 import ToolCard from '@adsites/ui-kit/ToolCard.astro';
 import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import CookieConsent from '@adsites/ui-kit/CookieConsent.astro';
 import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
 ---
 
@@ -129,6 +130,7 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
 
     <AdSlot position="bottom" />
     <Footer siteName={SITE.name} siteUrl={SITE.url} />
+    <CookieConsent />
   </body>
 </html>
 

@@ -10,6 +10,7 @@
     "./ToolLayout.astro": "./src/ToolLayout.astro",
     "./AdSlot.astro": "./src/AdSlot.astro",
     "./ThemeToggle.astro": "./src/ThemeToggle.astro",
+    "./CookieConsent.astro": "./src/CookieConsent.astro",
     "./styles/global.css": "./src/styles/global.css",
     "./styles/tool-page.css": "./src/styles/tool-page.css"
   }
