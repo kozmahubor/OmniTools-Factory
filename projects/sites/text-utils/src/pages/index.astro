@@ -44,12 +44,15 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
 
     <script is:inline>
       (function() {
-        const p = new URLSearchParams(window.location.search);
-        let t = null;
-        if (p.get('dark') === 'true' || p.get('theme') === 'dark') t = 'dark';
-        else if (p.get('dark') === 'false' || p.get('theme') === 'light') t = 'light';
-        else t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', t);
+        try {
+          const p = new URLSearchParams(window.location.search);
+          let t = null;
+          if (p.get('dark') === 'true' || p.get('theme') === 'dark') t = 'dark';
+          else if (p.get('dark') === 'false' || p.get('theme') === 'light') t = 'light';
+          else t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+          if (t === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
       })();
     </script>
   </head>
