@@ -1,0 +1,160 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import { SITE, TOOLS } from '../config';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Us — {SITE.name}</title>
+    <meta name="description" content={`Learn about ${SITE.name}, our mission to build fast, free, and 100% private browser-based utility tools.`} />
+    <link rel="canonical" href={`${SITE.url}/about`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main class="about-page container">
+      <header class="about-hero">
+        <h1>About {SITE.name}</h1>
+        <p class="hero-lead">
+          Building fast, accessible, and privacy-first web utilities for writers, developers, students, and professionals worldwide.
+        </p>
+      </header>
+
+      <div class="about-content">
+        <section class="mission-section">
+          <h2>Our Mission</h2>
+          <p>
+            Many online text tools today are bloated with slow scripts, invasive sign-up walls, or security risks that upload your private text to third-party servers.
+          </p>
+          <p>
+            <strong>{SITE.name} was built with a different philosophy:</strong> zero-friction tools that run 100% locally inside your web browser. No accounts, no subscriptions, and complete privacy guaranteed.
+          </p>
+        </section>
+
+        <section class="pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-icon">⚡</div>
+            <h3>Instant Speed</h3>
+            <p>Built with modern static web tech (Astro) so pages load in milliseconds globally.</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon">🔒</div>
+            <h3>Privacy by Design</h3>
+            <p>All processing happens on your device. Your sensitive text never hits a backend server.</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon">📱</div>
+            <h3>Cross-Platform</h3>
+            <p>Optimized for seamless performance on smartphones, tablets, and desktop computers.</p>
+          </div>
+        </section>
+
+        <section class="ads-disclosure">
+          <h2>How We Stay Free</h2>
+          <p>
+            {SITE.name} is supported by unobtrusive display advertising. This enables us to maintain, expand, and serve our tool suite free of charge to millions of users around the globe.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+  </body>
+</html>
+
+<style>
+  .about-page {
+    max-width: 900px;
+    margin-inline: auto;
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .about-hero {
+    text-align: center;
+    margin-bottom: var(--space-12);
+  }
+
+  .about-hero h1 {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-3);
+  }
+
+  .hero-lead {
+    font-size: var(--text-xl);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    max-width: 700px;
+    margin-inline: auto;
+  }
+
+  .about-content section {
+    margin-bottom: var(--space-12);
+  }
+
+  .mission-section h2, .ads-disclosure h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+  }
+
+  .mission-section p, .ads-disclosure p {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-4);
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .pillar-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    text-align: center;
+  }
+
+  .pillar-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .pillar-card h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-2);
+  }
+
+  .pillar-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-normal);
+  }
+</style>

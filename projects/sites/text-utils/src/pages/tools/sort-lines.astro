@@ -1,0 +1,179 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'sort-lines')!;
+const faq = [
+  { question: 'What sort options are available?', answer: 'You can sort lines Alphabetically (A-Z or Z-A), Numerically, by Line Length, or Reverse current order.' },
+  { question: 'Can I sort case-insensitively?', answer: 'Yes! Toggle case-insensitive sorting to treat uppercase and lowercase letters equally.' },
+  { question: 'Is my data stored on a server?', answer: 'No — all line sorting takes place purely in your browser using JavaScript.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Paste lines of text to sort here..."
+      rows="8"
+      aria-label="Enter text lines to sort"
+    ></textarea>
+
+    <div class="sort-controls">
+      <div class="control-group">
+        <label for="sort-type">Sort Method</label>
+        <select id="sort-type" class="input">
+          <option value="alpha-asc">Alphabetical (A → Z)</option>
+          <option value="alpha-desc">Alphabetical (Z → A)</option>
+          <option value="num-asc">Numerical (1 → 9)</option>
+          <option value="num-desc">Numerical (9 → 1)</option>
+          <option value="length-asc">Length (Shortest first)</option>
+          <option value="length-desc">Length (Longest first)</option>
+          <option value="reverse">Reverse Current Order</option>
+          <option value="random">Shuffle / Randomize</option>
+        </select>
+      </div>
+
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="opt-case" checked /> Case insensitive
+        </label>
+      </div>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-count">0</span>
+        <span class="tool-stat-label">Total Lines</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Sorted Lines</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Sorted Lines</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .sort-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .control-group select {
+    min-width: 220px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    padding-top: var(--space-4);
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const sortSelect = document.getElementById('sort-type') as HTMLSelectElement;
+  const optCase = document.getElementById('opt-case') as HTMLInputElement;
+  const result = document.getElementById('result')!;
+  const statCount = document.getElementById('stat-count')!;
+
+  function process() {
+    const raw = input.value;
+    if (!raw) {
+      result.textContent = '';
+      statCount.textContent = '0';
+      return;
+    }
+
+    let lines = raw.split('\n');
+    statCount.textContent = lines.length.toLocaleString();
+
+    const mode = sortSelect.value;
+    const ignoreCase = optCase.checked;
+
+    switch (mode) {
+      case 'alpha-asc':
+        lines.sort((a, b) => (ignoreCase ? a.toLowerCase().localeCompare(b.toLowerCase()) : a.localeCompare(b)));
+        break;
+      case 'alpha-desc':
+        lines.sort((a, b) => (ignoreCase ? b.toLowerCase().localeCompare(a.toLowerCase()) : b.localeCompare(a)));
+        break;
+      case 'num-asc':
+        lines.sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
+        break;
+      case 'num-desc':
+        lines.sort((a, b) => (parseFloat(b) || 0) - (parseFloat(a) || 0));
+        break;
+      case 'length-asc':
+        lines.sort((a, b) => a.length - b.length);
+        break;
+      case 'length-desc':
+        lines.sort((a, b) => b.length - a.length);
+        break;
+      case 'reverse':
+        lines.reverse();
+        break;
+      case 'random':
+        lines.sort(() => Math.random() - 0.5);
+        break;
+    }
+
+    result.textContent = lines.join('\n');
+  }
+
+  input.addEventListener('input', process);
+  sortSelect.addEventListener('change', process);
+  optCase.addEventListener('change', process);
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Sorted Lines'; }, 1500);
+  });
+</script>

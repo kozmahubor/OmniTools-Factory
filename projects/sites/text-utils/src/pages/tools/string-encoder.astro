@@ -1,0 +1,141 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'string-encoder')!;
+const faq = [
+  { question: 'What encoders/decoders are supported?', answer: 'We support URL Encoding, HTML Entities Encoding, Base64 Encoding/Decoding, and Unicode Escape/Unescape.' },
+  { question: 'Why encode strings?', answer: 'Encoding converts special characters into safe representations for web URLs, HTML markup, database storage, or API payloads.' },
+  { question: 'Is Base64 decoding secure?', answer: 'Yes, everything happens strictly within your browser. No encoded string is ever transmitted across the internet.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Type or paste your text to encode/decode here..."
+      rows="6"
+      aria-label="Enter string to encode or decode"
+    ></textarea>
+
+    <div class="encoder-actions" id="encoder-actions">
+      <button class="btn btn-secondary" data-action="url-enc">URL Encode</button>
+      <button class="btn btn-secondary" data-action="url-dec">URL Decode</button>
+      <button class="btn btn-secondary" data-action="html-enc">HTML Encode</button>
+      <button class="btn btn-secondary" data-action="html-dec">HTML Decode</button>
+      <button class="btn btn-secondary" data-action="b64-enc">Base64 Encode</button>
+      <button class="btn btn-secondary" data-action="b64-dec">Base64 Decode</button>
+      <button class="btn btn-secondary" data-action="unicode-enc">Unicode Escape</button>
+      <button class="btn btn-secondary" data-action="unicode-dec">Unicode Unescape</button>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Encoded / Decoded Result</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Result</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .encoder-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .encoder-actions .btn.active {
+    background: var(--color-accent-gradient);
+    color: white;
+    border-color: transparent;
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const result = document.getElementById('result')!;
+  let currentAction = 'url-enc';
+
+  function process() {
+    const text = input.value;
+    if (!text) {
+      result.textContent = '';
+      return;
+    }
+
+    try {
+      switch (currentAction) {
+        case 'url-enc':
+          result.textContent = encodeURIComponent(text);
+          break;
+        case 'url-dec':
+          result.textContent = decodeURIComponent(text);
+          break;
+        case 'html-enc':
+          result.textContent = text.replace(/[\u00A0-\u9999<>&"']/g, (i) => '&#' + i.charCodeAt(0) + ';');
+          break;
+        case 'html-dec': {
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          result.textContent = doc.documentElement.textContent || '';
+          break;
+        }
+        case 'b64-enc':
+          result.textContent = btoa(unescape(encodeURIComponent(text)));
+          break;
+        case 'b64-dec':
+          result.textContent = decodeURIComponent(escape(atob(text.trim())));
+          break;
+        case 'unicode-enc':
+          result.textContent = text.split('').map(c => {
+            const code = c.charCodeAt(0);
+            return code > 127 ? '\\u' + ('0000' + code.toString(16)).slice(-4) : c;
+          }).join('');
+          break;
+        case 'unicode-dec':
+          result.textContent = text.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+          break;
+      }
+    } catch {
+      result.textContent = '[Invalid input string for this operation]';
+    }
+  }
+
+  input.addEventListener('input', process);
+
+  document.getElementById('encoder-actions')?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-action]') as HTMLElement;
+    if (!btn) return;
+    document.querySelectorAll('[data-action]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentAction = btn.dataset.action!;
+    process();
+  });
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Result'; }, 1500);
+  });
+</script>

@@ -1,0 +1,260 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import ToolCard from '@adsites/ui-kit/ToolCard.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{SITE.name} — Free Online Text Tools</title>
+    <meta name="description" content={SITE.description} />
+    <link rel="canonical" href={SITE.url} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${SITE.name} — Free Online Text Tools`} />
+    <meta property="og:description" content={SITE.description} />
+    <meta property="og:url" content={SITE.url} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.url,
+      description: SITE.description,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE.url}/tools?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    })} />
+
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="hero-title">
+              <span class="hero-accent">Free</span> Online Text Tools
+            </h1>
+            <p class="hero-subtitle">
+              {TOOLS.length} powerful text utilities — all running in your browser. 
+              No sign-up, no data sent to servers, 100% private.
+            </p>
+            <div class="hero-badges">
+              <span class="badge">⚡ Instant</span>
+              <span class="badge">🔒 Private</span>
+              <span class="badge">📱 Works on Mobile</span>
+              <span class="badge">💯 Free Forever</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <AdSlot position="top" />
+
+      <!-- Tools Grid -->
+      <section class="tools-section container">
+        {TOOL_CATEGORIES.map((category) => (
+          <div class="tools-category">
+            <h2 class="category-title">{category} Tools</h2>
+            <div class="tools-grid">
+              {TOOLS.filter((t) => t.category === category).map((tool) => (
+                <ToolCard
+                  name={tool.name}
+                  slug={tool.slug}
+                  icon={tool.icon}
+                  description={tool.description}
+                  category={tool.category}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <!-- Why Section -->
+      <section class="why-section container">
+        <h2>Why TextToolBox?</h2>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">🚀</div>
+            <h3>Lightning Fast</h3>
+            <p>All tools run directly in your browser — no server round-trips. Results appear instantly as you type.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🔒</div>
+            <h3>100% Private</h3>
+            <p>Your text never leaves your device. No data is stored, tracked, or sent to any server.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📱</div>
+            <h3>Works Everywhere</h3>
+            <p>Responsive design that works perfectly on phones, tablets, and desktops. No app download needed.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">💡</div>
+            <h3>No Sign-up</h3>
+            <p>Open any tool and start using it immediately. No accounts, no emails, no friction.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+  </body>
+</html>
+
+<style>
+  /* Hero */
+  .hero {
+    padding: var(--space-16) 0 var(--space-12);
+    text-align: center;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero-accent {
+    background: var(--color-accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-inline: auto;
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-6);
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Tools Section */
+  .tools-section {
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .tools-category {
+    margin-bottom: var(--space-10);
+  }
+
+  .category-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* Why Section */
+  .why-section {
+    padding: var(--space-16) var(--space-4);
+  }
+
+  .why-section h2 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .why-card {
+    text-align: center;
+    padding: var(--space-8);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-base);
+  }
+
+  .why-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .why-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .why-card h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-2);
+  }
+
+  .why-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  @media (max-width: 640px) {
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

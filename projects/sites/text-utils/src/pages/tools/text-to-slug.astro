@@ -1,0 +1,152 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'text-to-slug')!;
+const faq = [
+  { question: 'What is a URL Slug?', answer: 'A slug is the user-friendly, SEO-optimized portion of a web URL that identifies a specific page (e.g., "my-first-blog-post").' },
+  { question: 'Does this handle accented characters?', answer: 'Yes! Accented and international characters (e.g., é, á, ő, ü, ñ) are automatically transliterated to standard Latin letters.' },
+  { question: 'What separators can I use?', answer: 'You can choose between hyphens (-), underscores (_), dots (.), or custom separator characters.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Type your title or headline here..."
+      rows="4"
+      aria-label="Enter text to convert to slug"
+    ></textarea>
+
+    <div class="slug-options">
+      <div class="option-group">
+        <label for="slug-separator">Separator</label>
+        <select id="slug-separator" class="input">
+          <option value="-">Hyphen (-)</option>
+          <option value="_">Underscore (_)</option>
+          <option value=".">Dot (.)</option>
+          <option value="">None (concat)</option>
+        </select>
+      </div>
+
+      <div class="option-group checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="opt-lower" checked /> Lowercase slug
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="opt-numbers" checked /> Keep numbers
+        </label>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Generated Slug</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Slug</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .slug-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .option-group select {
+    min-width: 160px;
+  }
+
+  .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const separatorSelect = document.getElementById('slug-separator') as HTMLSelectElement;
+  const optLower = document.getElementById('opt-lower') as HTMLInputElement;
+  const optNumbers = document.getElementById('opt-numbers') as HTMLInputElement;
+  const result = document.getElementById('result')!;
+
+  function slugify(str: string): string {
+    if (!str) return '';
+
+    let text = str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // strip accents
+    
+    if (optLower.checked) {
+      text = text.toLowerCase();
+    }
+
+    const sep = separatorSelect.value;
+    const allowed = optNumbers.checked ? 'a-zA-Z0-9' : 'a-zA-Z';
+    const regex = new RegExp(`[^${allowed}]+`, 'g');
+
+    return text
+      .replace(regex, ' ')
+      .trim()
+      .split(/\s+/)
+      .join(sep);
+  }
+
+  function update() {
+    result.textContent = slugify(input.value);
+  }
+
+  input.addEventListener('input', update);
+  separatorSelect.addEventListener('change', update);
+  optLower.addEventListener('change', update);
+  optNumbers.addEventListener('change', update);
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Slug'; }, 1500);
+  });
+</script>

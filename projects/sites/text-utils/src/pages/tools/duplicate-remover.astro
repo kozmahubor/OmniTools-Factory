@@ -1,0 +1,159 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'duplicate-remover')!;
+const faq = [
+  { question: 'How does Duplicate Line Remover work?', answer: 'It scans your text line by line and keeps only the first occurrence of each unique line, filtering out all duplicates.' },
+  { question: 'Is case sensitivity supported?', answer: 'Yes! You can toggle case sensitivity to treat "Apple" and "apple" as duplicates or as distinct lines.' },
+  { question: 'Can I trim leading/trailing whitespace?', answer: 'Yes, enabling the "Trim lines" option ensures lines with invisible extra spaces are matched correctly.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Paste lines of text here..."
+      rows="8"
+      aria-label="Enter text lines to remove duplicates"
+    ></textarea>
+
+    <div class="options-bar">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-case" /> Case sensitive
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-trim" checked /> Trim spaces before comparing
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-empty" /> Keep empty lines
+      </label>
+    </div>
+
+    <div class="tool-stats" id="stats-bar">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-original">0</span>
+        <span class="tool-stat-label">Original Lines</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-unique">0</span>
+        <span class="tool-stat-label">Unique Lines</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-removed">0</span>
+        <span class="tool-stat-label">Removed Duplicates</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Cleaned Unique Lines</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Unique Lines</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .options-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const result = document.getElementById('result')!;
+  const optCase = document.getElementById('opt-case') as HTMLInputElement;
+  const optTrim = document.getElementById('opt-trim') as HTMLInputElement;
+  const optEmpty = document.getElementById('opt-empty') as HTMLInputElement;
+
+  const statOrig = document.getElementById('stat-original')!;
+  const statUnique = document.getElementById('stat-unique')!;
+  const statRemoved = document.getElementById('stat-removed')!;
+
+  function process() {
+    const rawText = input.value;
+    if (!rawText) {
+      result.textContent = '';
+      statOrig.textContent = '0';
+      statUnique.textContent = '0';
+      statRemoved.textContent = '0';
+      return;
+    }
+
+    const lines = rawText.split('\n');
+    const seen = new Set<string>();
+    const uniqueLines: string[] = [];
+
+    for (let line of lines) {
+      let key = line;
+      if (optTrim.checked) key = key.trim();
+      if (!optCase.checked) key = key.toLowerCase();
+
+      if (!optEmpty.checked && key === '') continue;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueLines.push(optTrim.checked ? line.trim() : line);
+      }
+    }
+
+    const origCount = lines.length;
+    const uniqueCount = uniqueLines.length;
+    const removedCount = origCount - uniqueCount;
+
+    statOrig.textContent = origCount.toLocaleString();
+    statUnique.textContent = uniqueCount.toLocaleString();
+    statRemoved.textContent = removedCount.toLocaleString();
+
+    result.textContent = uniqueLines.join('\n');
+  }
+
+  input.addEventListener('input', process);
+  optCase.addEventListener('change', process);
+  optTrim.addEventListener('change', process);
+  optEmpty.addEventListener('change', process);
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Unique Lines'; }, 1500);
+  });
+</script>

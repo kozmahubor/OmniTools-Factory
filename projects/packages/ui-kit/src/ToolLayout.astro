@@ -1,0 +1,138 @@
+---
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import AdSlot from './AdSlot.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  siteName: string;
+  siteUrl: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  tools: { name: string; slug: string; icon: string }[];
+  faq?: { question: string; answer: string }[];
+}
+
+const {
+  title,
+  description,
+  siteName,
+  siteUrl,
+  canonicalUrl,
+  ogImage,
+  tools,
+  faq = [],
+} = Astro.props;
+
+const fullTitle = `${title} — ${siteName}`;
+const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+
+// Build FAQ Schema
+const faqSchema = faq.length > 0
+  ? JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    })
+  : null;
+
+// WebApplication schema
+const appSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: title,
+  description: description,
+  url: canonical,
+  applicationCategory: "UtilityApplication",
+  operatingSystem: "Any",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO -->
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Schema.org -->
+    <script type="application/ld+json" set:html={appSchema} />
+    {faqSchema && <script type="application/ld+json" set:html={faqSchema} />}
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Theme initialization (prevents flash) -->
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={siteName} siteUrl={siteUrl} tools={tools} />
+
+    <main>
+      <div class="tool-page">
+        <div class="tool-main">
+          <slot />
+
+          {faq.length > 0 && (
+            <section class="tool-faq">
+              <h2>Frequently Asked Questions</h2>
+              {faq.map((item) => (
+                <details class="faq-item">
+                  <summary>{item.question}</summary>
+                  <div class="faq-answer">
+                    <p>{item.answer}</p>
+                  </div>
+                </details>
+              ))}
+            </section>
+          )}
+        </div>
+
+        <aside class="tool-sidebar">
+          <AdSlot position="sidebar" />
+        </aside>
+      </div>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={siteName} siteUrl={siteUrl} />
+  </body>
+</html>

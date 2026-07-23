@@ -1,0 +1,129 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'text-reverser')!;
+const faq = [
+  { question: 'How does text reversing work?', answer: 'The text reverser flips your input text based on your selection — by individual characters, by words, or by entire lines.' },
+  { question: 'Is my data private?', answer: 'Yes! All reversal logic happens entirely in your web browser. Nothing is sent to any server.' },
+  { question: 'What is Flip Upside Down mode?', answer: 'Upside down mode uses Unicode character mappings to flip your letters upside down, producing text like ʇxǝʇ pǝddılɟ.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Type or paste your text here..."
+      rows="6"
+      aria-label="Enter text to reverse"
+    ></textarea>
+
+    <div class="reverser-options" id="reverser-options">
+      <button class="btn btn-secondary active" data-mode="chars">Reverse Characters</button>
+      <button class="btn btn-secondary" data-mode="words">Reverse Words</button>
+      <button class="btn btn-secondary" data-mode="lines">Reverse Lines</button>
+      <button class="btn btn-secondary" data-mode="upside">Upside Down (ʇxǝ⟘)</button>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Reversed Result</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Result</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .reverser-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .reverser-options .btn.active {
+    background: var(--color-accent-gradient);
+    color: white;
+    border-color: transparent;
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const result = document.getElementById('result')!;
+  let currentMode = 'chars';
+
+  const UPSIDE_DOWN_MAP: Record<string, string> = {
+    'a': 'ɐ', 'b': 'q', 'c': 'ɔ', 'd': 'p', 'e': 'ǝ', 'f': 'ɟ', 'g': 'ƃ', 'h': 'ɥ',
+    'i': 'ı', 'j': 'ɾ', 'k': 'ʞ', 'l': 'l', 'm': 'ɯ', 'n': 'u', 'o': 'o', 'p': 'd',
+    'q': 'b', 'r': 'ɹ', 's': 's', 't': 'ʇ', 'u': 'n', 'v': 'ʌ', 'w': 'ʍ', 'x': 'x',
+    'y': 'ʎ', 'z': 'z', 'A': '∀', 'B': '𐐒', 'C': 'Ɔ', 'D': '◖', 'E': 'Ǝ', 'F': 'Ⅎ',
+    'G': '⅁', 'H': 'H', 'I': 'I', 'J': 'ſ', 'K': 'ʞ', 'L': '⅂', 'M': 'W', 'N': 'N',
+    'O': 'O', 'P': 'Ԁ', 'Q': 'Ό', 'R': 'ᴚ', 'S': 'S', 'T': '⊥', 'U': '∩', 'V': 'Λ',
+    'W': 'M', 'X': 'X', 'Y': '⅄', 'Z': 'Z', '0': '0', '1': 'Ɩ', '2': '乙', '3': 'Ɛ',
+    '4': 'ㄣ', '5': 'ϛ', '6': '9', '7': 'ㄥ', '8': '8', '9': '6', '.': '˙', ',': '\'',
+    '\'': ',', '"': ',,', '?': '¿', '!': '¡', '(': ')', ')': '(', '[': ']', ']': '[',
+    '{': '}', '}': '{', '<': '>', '>': '<', '_': '‾'
+  };
+
+  function reverseText() {
+    const text = input.value;
+    if (!text) {
+      result.textContent = '';
+      return;
+    }
+
+    switch (currentMode) {
+      case 'chars':
+        result.textContent = Array.from(text).reverse().join('');
+        break;
+      case 'words':
+        result.textContent = text.split('\n').map(line => line.split(/\s+/).reverse().join(' ')).join('\n');
+        break;
+      case 'lines':
+        result.textContent = text.split('\n').reverse().join('\n');
+        break;
+      case 'upside':
+        result.textContent = Array.from(text).reverse().map(char => UPSIDE_DOWN_MAP[char] || char).join('');
+        break;
+    }
+  }
+
+  input.addEventListener('input', reverseText);
+
+  document.getElementById('reverser-options')?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-mode]') as HTMLElement;
+    if (!btn) return;
+    document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode!;
+    reverseText();
+  });
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Result'; }, 1500);
+  });
+</script>

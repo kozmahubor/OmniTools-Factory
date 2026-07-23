@@ -1,0 +1,156 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'whitespace-cleaner')!;
+const faq = [
+  { question: 'What does Whitespace Cleaner do?', answer: 'It cleans up messy text by removing duplicate spaces, converting tabs to spaces, trimming leading/trailing line whitespace, and removing empty lines.' },
+  { question: 'Can I collapse multiple blank lines?', answer: 'Yes! Toggle the "Collapse blank lines" option to turn multiple empty lines into single paragraph breaks.' },
+  { question: 'Is my data secure?', answer: 'Yes! Everything processes instantly inside your browser without sending any text to external servers.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Paste messy text with extra spaces here..."
+      rows="8"
+      aria-label="Enter text to clean whitespace"
+    ></textarea>
+
+    <div class="options-bar">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-extra-spaces" checked /> Remove extra spaces (double spaces → single)
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-trim-lines" checked /> Trim trailing/leading spaces on each line
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-tabs" checked /> Convert tabs to 4 spaces
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-empty-lines" /> Remove ALL blank lines
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-collapse-lines" checked /> Collapse multiple blank lines to one
+      </label>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Cleaned Result</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Cleaned Text</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .options-bar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const optExtraSpaces = document.getElementById('opt-extra-spaces') as HTMLInputElement;
+  const optTrimLines = document.getElementById('opt-trim-lines') as HTMLInputElement;
+  const optTabs = document.getElementById('opt-tabs') as HTMLInputElement;
+  const optEmptyLines = document.getElementById('opt-empty-lines') as HTMLInputElement;
+  const optCollapseLines = document.getElementById('opt-collapse-lines') as HTMLInputElement;
+
+  const result = document.getElementById('result')!;
+
+  function process() {
+    let text = input.value;
+    if (!text) {
+      result.textContent = '';
+      return;
+    }
+
+    if (optTabs.checked) {
+      text = text.replace(/\t/g, '    ');
+    }
+
+    let lines = text.split('\n');
+
+    if (optTrimLines.checked) {
+      lines = lines.map(line => line.trim());
+    }
+
+    if (optExtraSpaces.checked) {
+      lines = lines.map(line => line.replace(/  +/g, ' '));
+    }
+
+    if (optEmptyLines.checked) {
+      lines = lines.filter(line => line.length > 0);
+    } else if (optCollapseLines.checked) {
+      const collapsed: string[] = [];
+      let inBlank = false;
+      for (const line of lines) {
+        if (line === '') {
+          if (!inBlank) {
+            collapsed.push(line);
+            inBlank = true;
+          }
+        } else {
+          collapsed.push(line);
+          inBlank = false;
+        }
+      }
+      lines = collapsed;
+    }
+
+    result.textContent = lines.join('\n');
+  }
+
+  input.addEventListener('input', process);
+  optExtraSpaces.addEventListener('change', process);
+  optTrimLines.addEventListener('change', process);
+  optTabs.addEventListener('change', process);
+  optEmptyLines.addEventListener('change', process);
+  optCollapseLines.addEventListener('change', process);
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Cleaned Text'; }, 1500);
+  });
+</script>

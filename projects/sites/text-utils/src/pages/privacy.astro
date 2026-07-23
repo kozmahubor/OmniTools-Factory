@@ -1,0 +1,175 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import { SITE, TOOLS } from '../config';
+
+const lastUpdated = 'July 23, 2026';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — {SITE.name}</title>
+    <meta name="description" content={`Privacy Policy for ${SITE.name}. Learn how we protect your data, handle cookies, and ensure 100% browser-based text processing.`} />
+    <link rel="canonical" href={`${SITE.url}/privacy`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main class="legal-page container">
+      <header class="legal-header">
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last Updated: {lastUpdated}</p>
+      </header>
+
+      <div class="legal-content">
+        <section>
+          <h2>1. Introduction</h2>
+          <p>
+            Welcome to <strong>{SITE.name}</strong> ("we," "our," or "us"). We are committed to respecting your privacy and protecting any information you share with us while using our web utility services at <a href={SITE.url}>{SITE.url}</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Browser-Based Text Processing (Zero Server Storage)</h2>
+          <p>
+            The core feature of {SITE.name} is that <strong>all text tools process your data entirely within your web browser using client-side JavaScript</strong>.
+          </p>
+          <ul>
+            <li>Your input text is never uploaded to our servers or stored in any database.</li>
+            <li>We do not log, inspect, analyze, or retain any text, documents, or content you process with our tools.</li>
+            <li>Once you close or refresh your browser tab, your transient data is permanently cleared from your device's memory.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. Information We Collect Automatically</h2>
+          <p>
+            Like most websites, we may automatically collect basic non-personally identifiable technical information when you visit {SITE.name}:
+          </p>
+          <ul>
+            <li><strong>Log & Usage Data:</strong> Browser type, operating system, referring URL, pages visited, and timestamp of access.</li>
+            <li><strong>IP Address:</strong> Used strictly for security monitoring, fraud prevention, and regional routing.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>4. Cookies & Advertising (Google AdSense)</h2>
+          <p>
+            We use third-party advertising vendors, including Google AdSense, to serve advertisements when you visit our website.
+          </p>
+          <ul>
+            <li>Google uses cookies (including the DART cookie) to serve ads based on your prior visits to our website or other websites on the internet.</li>
+            <li>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
+            <li>Alternatively, you can opt out of third-party vendor cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a>.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>5. Third-Party Analytics</h2>
+          <p>
+            We may use privacy-preserving analytics tools (such as Google Analytics or Plausible Analytics) to collect aggregate metrics regarding site traffic and usage patterns. This data is anonymized and used solely to improve tool functionality and user experience.
+          </p>
+        </section>
+
+        <section>
+          <h2>6. GDPR & CCPA Privacy Rights</h2>
+          <p>
+            Under the European General Data Protection Regulation (GDPR) and California Consumer Privacy Act (CCPA), you have the right to:
+          </p>
+          <ul>
+            <li>Request information on data collection practices.</li>
+            <li>Request erasure of any personal data held about you.</li>
+            <li>Opt out of the sale or sharing of personal information.</li>
+          </ul>
+          <p>
+            Since we do not store or collect personal account data or text content, there is generally no personal user data retained on our servers.
+          </p>
+        </section>
+
+        <section>
+          <h2>7. Contact Us</h2>
+          <p>
+            If you have any questions, concerns, or inquiries regarding this Privacy Policy, please contact us at:
+          </p>
+          <p>
+            <strong>Email:</strong> <a href="mailto:privacy@texttoolbox.com">privacy@texttoolbox.com</a><br />
+            <strong>Web Form:</strong> <a href="/contact">Contact Page</a>
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+  </body>
+</html>
+
+<style>
+  .legal-page {
+    max-width: 800px;
+    margin-inline: auto;
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .legal-header {
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .legal-header h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .last-updated {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-1);
+  }
+
+  .legal-content section {
+    margin-bottom: var(--space-8);
+  }
+
+  .legal-content h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+    color: var(--color-text-primary);
+  }
+
+  .legal-content p, .legal-content li {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-3);
+  }
+
+  .legal-content ul {
+    padding-left: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+
+  .legal-content li {
+    margin-bottom: var(--space-2);
+  }
+</style>

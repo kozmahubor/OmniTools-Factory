@@ -1,0 +1,139 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'word-counter')!;
+const faq = [
+  { question: 'How does the word counter work?', answer: 'Our word counter processes your text entirely in your browser. As you type or paste text, it instantly calculates the number of words, characters (with and without spaces), sentences, and paragraphs.' },
+  { question: 'Is my text sent to any server?', answer: 'No — all processing happens locally in your browser. Your text never leaves your device, making this tool 100% private and secure.' },
+  { question: 'What counts as a word?', answer: 'A word is any sequence of characters separated by whitespace (spaces, tabs, or line breaks). Hyphenated words like "well-known" count as one word.' },
+  { question: 'Can I use this on mobile?', answer: 'Yes! The tool is fully responsive and works on phones, tablets, and desktops.' },
+  { question: 'What is the reading time estimate based on?', answer: 'Reading time is calculated at an average reading speed of 200 words per minute, which is a commonly accepted average for adult readers.' },
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Type or paste your text here..."
+      rows="10"
+      aria-label="Enter your text to count words and characters"
+    ></textarea>
+
+    <div class="tool-stats" id="stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-words">0</span>
+        <span class="tool-stat-label">Words</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-chars">0</span>
+        <span class="tool-stat-label">Characters</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-chars-no-spaces">0</span>
+        <span class="tool-stat-label">No Spaces</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-sentences">0</span>
+        <span class="tool-stat-label">Sentences</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-paragraphs">0</span>
+        <span class="tool-stat-label">Paragraphs</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-reading-time">0 min</span>
+        <span class="tool-stat-label">Reading Time</span>
+      </div>
+    </div>
+
+    <div class="tool-actions">
+      <button id="btn-clear" class="btn btn-secondary">Clear</button>
+      <button id="btn-copy" class="btn btn-secondary">📋 Copy Stats</button>
+      <button id="btn-paste" class="btn btn-primary">📥 Paste from Clipboard</button>
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const statWords = document.getElementById('stat-words')!;
+  const statChars = document.getElementById('stat-chars')!;
+  const statCharsNoSpaces = document.getElementById('stat-chars-no-spaces')!;
+  const statSentences = document.getElementById('stat-sentences')!;
+  const statParagraphs = document.getElementById('stat-paragraphs')!;
+  const statReadingTime = document.getElementById('stat-reading-time')!;
+
+  function countStats() {
+    const text = input.value;
+
+    if (!text.trim()) {
+      statWords.textContent = '0';
+      statChars.textContent = '0';
+      statCharsNoSpaces.textContent = '0';
+      statSentences.textContent = '0';
+      statParagraphs.textContent = '0';
+      statReadingTime.textContent = '0 min';
+      return;
+    }
+
+    const words = text.trim().split(/\s+/).length;
+    const chars = text.length;
+    const charsNoSpaces = text.replace(/\s/g, '').length;
+    const sentences = text.split(/[.!?]+/).filter((s) => s.trim()).length;
+    const paragraphs = text.split(/\n\s*\n/).filter((p) => p.trim()).length || 1;
+    const readingTime = Math.max(1, Math.ceil(words / 200));
+
+    statWords.textContent = words.toLocaleString();
+    statChars.textContent = chars.toLocaleString();
+    statCharsNoSpaces.textContent = charsNoSpaces.toLocaleString();
+    statSentences.textContent = sentences.toLocaleString();
+    statParagraphs.textContent = paragraphs.toLocaleString();
+    statReadingTime.textContent = `${readingTime} min`;
+  }
+
+  input.addEventListener('input', countStats);
+
+  // Clear button
+  document.getElementById('btn-clear')?.addEventListener('click', () => {
+    input.value = '';
+    countStats();
+    input.focus();
+  });
+
+  // Copy stats
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    const statsText = `Words: ${statWords.textContent}, Characters: ${statChars.textContent}, Sentences: ${statSentences.textContent}, Paragraphs: ${statParagraphs.textContent}, Reading Time: ${statReadingTime.textContent}`;
+    await navigator.clipboard.writeText(statsText);
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Stats'; }, 1500);
+  });
+
+  // Paste from clipboard
+  document.getElementById('btn-paste')?.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      input.value = text;
+      countStats();
+    } catch {
+      input.focus();
+    }
+  });
+</script>

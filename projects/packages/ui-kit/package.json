@@ -1,0 +1,16 @@
+{
+  "name": "@adsites/ui-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./Header.astro": "./src/Header.astro",
+    "./Footer.astro": "./src/Footer.astro",
+    "./ToolCard.astro": "./src/ToolCard.astro",
+    "./ToolLayout.astro": "./src/ToolLayout.astro",
+    "./AdSlot.astro": "./src/AdSlot.astro",
+    "./ThemeToggle.astro": "./src/ThemeToggle.astro",
+    "./styles/global.css": "./src/styles/global.css",
+    "./styles/tool-page.css": "./src/styles/tool-page.css"
+  }
+}

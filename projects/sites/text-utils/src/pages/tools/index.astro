@@ -1,0 +1,206 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import ToolCard from '@adsites/ui-kit/ToolCard.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import { SITE, TOOLS, TOOL_CATEGORIES } from '../../config';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All Text Tools — {SITE.name}</title>
+    <meta name="description" content={`Explore our complete directory of free online text tools. Case converters, word counters, text cleaners, encoders, and generators.`} />
+    <link rel="canonical" href={`${SITE.url}/tools`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main class="directory-page container">
+      <header class="directory-header">
+        <h1>All Text Tools</h1>
+        <p>Search and filter through our full collection of free online text utilities.</p>
+
+        <div class="search-bar">
+          <input
+            type="search"
+            id="search-input"
+            class="input"
+            placeholder="🔍 Search tools (e.g., word counter, case, slug, lorem)..."
+            aria-label="Search tools"
+          />
+        </div>
+
+        <div class="category-filters" id="category-filters">
+          <button class="filter-btn active" data-cat="all">All Tools ({TOOLS.length})</button>
+          {TOOL_CATEGORIES.map((cat) => (
+            <button class="filter-btn" data-cat={cat}>{cat}</button>
+          ))}
+        </div>
+      </header>
+
+      <AdSlot position="top" />
+
+      <div class="tools-grid" id="tools-grid">
+        {TOOLS.map((tool) => (
+          <div class="tool-wrapper" data-name={tool.name.toLowerCase()} data-desc={tool.description.toLowerCase()} data-cat={tool.category} data-keywords={tool.keywords.join(' ')}>
+            <ToolCard
+              name={tool.name}
+              slug={tool.slug}
+              icon={tool.icon}
+              description={tool.description}
+              category={tool.category}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div id="no-results" class="no-results" style="display: none;">
+        <p>No tools found matching your search query.</p>
+      </div>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+  </body>
+</html>
+
+<style>
+  .directory-page {
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .directory-header {
+    text-align: center;
+    max-width: 700px;
+    margin-inline: auto;
+    margin-bottom: var(--space-8);
+  }
+
+  .directory-header h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-2);
+  }
+
+  .directory-header p {
+    color: var(--color-text-secondary);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-6);
+  }
+
+  .search-bar {
+    margin-bottom: var(--space-6);
+  }
+
+  .search-bar input {
+    font-size: var(--text-lg);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .filter-btn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .filter-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+  }
+
+  .filter-btn.active {
+    background: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .no-results {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-lg);
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const toolWrappers = document.querySelectorAll('.tool-wrapper');
+  const noResults = document.getElementById('no-results')!;
+
+  let currentCategory = 'all';
+
+  function filter() {
+    const query = searchInput.value.toLowerCase().trim();
+    let visibleCount = 0;
+
+    toolWrappers.forEach((el) => {
+      const element = el as HTMLElement;
+      const name = element.dataset.name || '';
+      const desc = element.dataset.desc || '';
+      const cat = element.dataset.cat || '';
+      const keywords = element.dataset.keywords || '';
+
+      const matchesCat = currentCategory === 'all' || cat === currentCategory;
+      const matchesSearch = !query || name.includes(query) || desc.includes(query) || keywords.includes(query);
+
+      if (matchesCat && matchesSearch) {
+        element.style.display = '';
+        visibleCount++;
+      } else {
+        element.style.display = 'none';
+      }
+    });
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  searchInput.addEventListener('input', filter);
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = (btn as HTMLElement).dataset.cat || 'all';
+      filter();
+    });
+  });
+</script>

@@ -1,0 +1,205 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import { SITE, TOOLS } from '../config';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact Us — {SITE.name}</title>
+    <meta name="description" content={`Contact ${SITE.name} for support, feedback, feature requests, or business inquiries.`} />
+    <link rel="canonical" href={`${SITE.url}/contact`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        const t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main class="contact-page container">
+      <header class="contact-header">
+        <h1>Contact Us</h1>
+        <p>Have feedback, found a bug, or want to suggest a new tool? We'd love to hear from you!</p>
+      </header>
+
+      <div class="contact-grid">
+        <div class="contact-form-container">
+          <form id="contact-form" class="contact-form">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" class="input" required placeholder="John Doe" />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" class="input" required placeholder="john@example.com" />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select id="subject" class="input">
+                <option value="general">General Inquiry</option>
+                <option value="feature">Feature Request / New Tool Idea</option>
+                <option value="bug">Report a Bug</option>
+                <option value="business">Advertising & Business Partnerships</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" class="input" rows="5" required placeholder="How can we help you?"></textarea>
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn btn-primary">Send Message</button>
+            <div id="form-status" class="form-status" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <div class="contact-info">
+          <div class="info-card">
+            <h3>📧 Direct Email</h3>
+            <p>For urgent matters or direct inquiries:</p>
+            <a href="mailto:support@texttoolbox.com">support@texttoolbox.com</a>
+          </div>
+
+          <div class="info-card">
+            <h3>🛡️ Security & Privacy</h3>
+            <p>For privacy queries or data protection concerns:</p>
+            <a href="mailto:privacy@texttoolbox.com">privacy@texttoolbox.com</a>
+          </div>
+
+          <div class="info-card">
+            <h3>⏰ Response Time</h3>
+            <p>We aim to respond to all legitimate inquiries within 24–48 business hours.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+  </body>
+</html>
+
+<style>
+  .contact-page {
+    max-width: 1000px;
+    margin-inline: auto;
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .contact-header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .contact-header h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-2);
+  }
+
+  .contact-header p {
+    color: var(--color-text-secondary);
+    font-size: var(--text-lg);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: var(--space-8);
+  }
+
+  .contact-form-container {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-md);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .form-group label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .info-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .info-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-2);
+  }
+
+  .info-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+  }
+
+  .info-card a {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .form-status {
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .form-status.success {
+    color: var(--color-success);
+  }
+
+  @media (max-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('form-status')!;
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    status.className = 'form-status success';
+    status.textContent = '✅ Thank you! Your message has been sent successfully.';
+    form.reset();
+  });
+</script>

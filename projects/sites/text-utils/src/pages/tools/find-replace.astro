@@ -1,0 +1,181 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'find-replace')!;
+const faq = [
+  { question: 'How does Find and Replace work?', answer: 'Enter the text or pattern you want to search for, type the replacement text, and the tool instantly replaces all matching occurrences.' },
+  { question: 'Does it support Regular Expressions (Regex)?', answer: 'Yes! Check the "Use Regex" option to perform regex replacements, such as matching numbers, email patterns, or custom regex rules.' },
+  { question: 'Is my data secure?', answer: 'All replacements run locally in JavaScript in your web browser. No data is sent to external servers.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Paste your source text here..."
+      rows="6"
+      aria-label="Enter text for find and replace"
+    ></textarea>
+
+    <div class="find-replace-grid">
+      <div class="field-group">
+        <label for="find-query">Find text</label>
+        <input type="text" id="find-query" class="input" placeholder="Text or regex to find..." />
+      </div>
+
+      <div class="field-group">
+        <label for="replace-query">Replace with</label>
+        <input type="text" id="replace-query" class="input" placeholder="Replacement text..." />
+      </div>
+    </div>
+
+    <div class="options-bar">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-case" /> Case sensitive
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-regex" /> Use Regular Expressions (Regex)
+      </label>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-matches">0</span>
+        <span class="tool-stat-label">Replacements Made</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Replaced Result</h2>
+        <button id="btn-copy" class="btn btn-primary">📋 Copy Result</button>
+      </div>
+      <div class="tool-result-content" id="result"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<style>
+  .find-replace-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .field-group label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .options-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .checkbox-label input {
+    accent-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 640px) {
+    .find-replace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const input = document.getElementById('text-input') as HTMLTextAreaElement;
+  const findInput = document.getElementById('find-query') as HTMLInputElement;
+  const replaceInput = document.getElementById('replace-query') as HTMLInputElement;
+  const optCase = document.getElementById('opt-case') as HTMLInputElement;
+  const optRegex = document.getElementById('opt-regex') as HTMLInputElement;
+
+  const result = document.getElementById('result')!;
+  const statMatches = document.getElementById('stat-matches')!;
+
+  function process() {
+    const text = input.value;
+    const findStr = findInput.value;
+    const replaceStr = replaceInput.value;
+
+    if (!text || !findStr) {
+      result.textContent = text;
+      statMatches.textContent = '0';
+      return;
+    }
+
+    try {
+      let regex: RegExp;
+      const flags = optCase.checked ? 'g' : 'gi';
+
+      if (optRegex.checked) {
+        regex = new RegExp(findStr, flags);
+      } else {
+        const escaped = findStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        regex = new RegExp(escaped, flags);
+      }
+
+      const matches = text.match(regex);
+      const matchCount = matches ? matches.length : 0;
+      const output = text.replace(regex, replaceStr);
+
+      statMatches.textContent = matchCount.toLocaleString();
+      result.textContent = output;
+    } catch {
+      statMatches.textContent = 'Regex Error';
+      result.textContent = text;
+    }
+  }
+
+  input.addEventListener('input', process);
+  findInput.addEventListener('input', process);
+  replaceInput.addEventListener('input', process);
+  optCase.addEventListener('change', process);
+  optRegex.addEventListener('change', process);
+
+  document.getElementById('btn-copy')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(result.textContent || '');
+    const btn = document.getElementById('btn-copy')!;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Result'; }, 1500);
+  });
+</script>
