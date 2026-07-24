@@ -27,11 +27,14 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
 
     <!-- Google AdSense -->
     {SITE.adsenseClientId && (
-      <script
-        async
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClientId}`}
-        crossorigin="anonymous"
-      />
+      <>
+        <meta name="google-adsense-account" content={SITE.adsenseClientId} />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClientId}`}
+          crossorigin="anonymous"
+        />
+      </>
     )}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
