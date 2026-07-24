@@ -11,6 +11,7 @@ interface Props {
   siteUrl: string;
   canonicalUrl?: string;
   ogImage?: string;
+  adsenseClientId?: string;
   tools: { name: string; slug: string; icon: string }[];
   faq?: { question: string; answer: string }[];
 }
@@ -22,6 +23,7 @@ const {
   siteUrl,
   canonicalUrl,
   ogImage,
+  adsenseClientId = 'ca-pub-3019636938770543',
   tools,
   faq = [],
 } = Astro.props;
@@ -89,6 +91,15 @@ const appSchema = JSON.stringify({
     <!-- Schema.org -->
     <script type="application/ld+json" set:html={appSchema} />
     {faqSchema && <script type="application/ld+json" set:html={faqSchema} />}
+
+    <!-- Google AdSense -->
+    {adsenseClientId && (
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
+        crossorigin="anonymous"
+      />
+    )}
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

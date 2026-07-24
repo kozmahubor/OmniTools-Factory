@@ -3,6 +3,7 @@ export const SITE = {
   name: 'FixMyString',
   url: 'https://fixmystring.com',
   description: 'Free online text tools — word counter, case converter, text cleaner, and more. Fast, private, no sign-up required.',
+  adsenseClientId: 'ca-pub-3019636938770543',
 };
 
 /** All available tools */

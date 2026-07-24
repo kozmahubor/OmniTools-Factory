@@ -18,6 +18,15 @@ const lastUpdated = 'July 23, 2026';
     <meta name="description" content={`Privacy Policy for ${SITE.name}. Learn how we protect your data, handle cookies, and ensure 100% browser-based text processing.`} />
     <link rel="canonical" href={`${SITE.url}/privacy`} />
 
+    <!-- Google AdSense -->
+    {SITE.adsenseClientId && (
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClientId}`}
+        crossorigin="anonymous"
+      />
+    )}
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

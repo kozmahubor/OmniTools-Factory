@@ -17,6 +17,15 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../../config';
     <meta name="description" content={`Explore our complete directory of free online text tools. Case converters, word counters, text cleaners, encoders, and generators.`} />
     <link rel="canonical" href={`${SITE.url}/tools`} />
 
+    <!-- Google AdSense -->
+    {SITE.adsenseClientId && (
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClientId}`}
+        crossorigin="anonymous"
+      />
+    )}
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
