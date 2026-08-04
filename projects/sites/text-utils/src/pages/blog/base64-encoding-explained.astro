@@ -1,0 +1,170 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="Base64 Encoding Explained: What It Is, How It Works, and When to Use It"
+  description="A practical, jargon-free guide to Base64 encoding. Learn what it is, how the algorithm works, and real-world use cases in web development and APIs."
+  date="2025-07-22"
+  readingTime={8}
+  canonicalPath="/blog/base64-encoding-explained"
+>
+
+<p>If you've worked with web APIs, email systems, or embedded images in CSS, you've almost certainly encountered Base64 encoding — perhaps without fully understanding what it is. Strings like <code>SGVsbG8sIFdvcmxkIQ==</code> or seeing <code>data:image/png;base64,iVBORw0KGgo...</code> in your code are Base64 in action.</p>
+
+<p>This guide explains Base64 in plain terms: what it is, the math behind it, and when (and when not) to use it.</p>
+
+<h2>What Is Base64?</h2>
+
+<p>Base64 is an encoding scheme that converts binary data (bytes) into a string of ASCII characters. The name "Base64" refers to the fact that the encoding uses a 64-character alphabet to represent binary data.</p>
+
+<p>Those 64 characters are:</p>
+<ul>
+  <li>Letters A–Z (26 characters)</li>
+  <li>Letters a–z (26 characters)</li>
+  <li>Digits 0–9 (10 characters)</li>
+  <li>The characters <code>+</code> and <code>/</code> (2 characters)</li>
+  <li>The <code>=</code> sign is used for padding</li>
+</ul>
+
+<p>The fundamental purpose of Base64 is to represent arbitrary binary data using only a safe subset of ASCII characters. This matters because many text-based systems — email protocols, URLs, HTML attributes, JSON — were designed to handle text, not arbitrary binary data. Base64 bridges that gap.</p>
+
+<h2>Why Was Base64 Invented?</h2>
+
+<p>The origins of Base64 go back to email. Early email systems like SMTP (Simple Mail Transfer Protocol) were designed to transmit only 7-bit ASCII text. If you tried to attach a binary file (like an image or an executable), the bytes could contain values that the email server would misinterpret as control characters, corrupting the data.</p>
+
+<p>Base64 solved this by encoding binary data into safe ASCII text. The MIME (Multipurpose Internet Mail Extensions) standard, developed in the early 1990s, used Base64 as one of its core encoding mechanisms — which is why you can attach files to emails today.</p>
+
+<h2>How Does Base64 Encoding Work?</h2>
+
+<p>The algorithm is elegant but requires some explanation. Let's walk through it step by step:</p>
+
+<h3>Step 1: Convert to Binary</h3>
+<p>Take the input text (or binary data) and convert each character to its binary representation. Each byte is 8 bits.</p>
+
+<p>For example, the text "Hi!" in ASCII/UTF-8:</p>
+<ul>
+  <li>H = 72 = <code>01001000</code></li>
+  <li>i = 105 = <code>01101001</code></li>
+  <li>! = 33 = <code>00100001</code></li>
+</ul>
+<p>Combined: <code>010010000110100100100001</code> (24 bits)</p>
+
+<h3>Step 2: Split into 6-Bit Groups</h3>
+<p>Base64 works in 6-bit chunks (because 2^6 = 64, which is why we have 64 characters). Split the 24 bits into groups of 6:</p>
+<ul>
+  <li><code>010010</code> = 18</li>
+  <li><code>000110</code> = 6</li>
+  <li><code>100100</code> = 36</li>
+  <li><code>100001</code> = 33</li>
+</ul>
+
+<h3>Step 3: Map to Base64 Characters</h3>
+<p>Each 6-bit value maps to a character in the Base64 alphabet:</p>
+<ul>
+  <li>18 → S</li>
+  <li>6 → G</li>
+  <li>36 → k</li>
+  <li>33 → h</li>
+</ul>
+<p>Result: <code>SGkh</code></p>
+
+<p>And indeed, encoding "Hi!" in Base64 gives you <code>SGkh</code>. You can verify this with any Base64 encoder tool.</p>
+
+<h3>Padding with =</h3>
+<p>Base64 works in groups of 3 bytes (24 bits), which produce 4 Base64 characters. If the input isn't a multiple of 3 bytes, the output is padded with <code>=</code> signs:</p>
+<ul>
+  <li>1 remaining byte → 2 Base64 characters + <code>==</code></li>
+  <li>2 remaining bytes → 3 Base64 characters + <code>=</code></li>
+</ul>
+<p>This is why you often see Base64 strings ending in <code>=</code> or <code>==</code>.</p>
+
+<h2>Base64 Is Encoding, Not Encryption</h2>
+
+<p>This is critical to understand: <strong>Base64 is not a security mechanism.</strong> It does not encrypt data. Anyone who receives a Base64-encoded string can instantly decode it using any Base64 decoder tool — no key, no password required.</p>
+
+<p>Base64 is purely a data format conversion. It changes the representation of data without protecting it. If you Base64-encode a password and transmit it, the password is just as exposed as if you'd sent it in plain text — perhaps more so, because developers might mistakenly assume encoding means security.</p>
+
+<p>Never use Base64 as a security measure. Use proper encryption (AES, RSA, etc.) or hashing (bcrypt, SHA-256) when security is required.</p>
+
+<h2>Real-World Use Cases for Base64</h2>
+
+<h3>1. Embedding Images in HTML and CSS</h3>
+<p>Instead of linking to an image file, you can embed the image directly in your HTML or CSS using a Data URI:</p>
+
+<p><code>background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...");</code></p>
+
+<p>This is useful for:</p>
+<ul>
+  <li>Small icons that are critical to render (no separate HTTP request needed)</li>
+  <li>Inlining images in email templates (which don't reliably load external images)</li>
+  <li>Generating images dynamically and displaying them without saving to disk</li>
+</ul>
+<p>The downside: Base64-encoded data is ~33% larger than the original binary, so this isn't suitable for large images.</p>
+
+<h3>2. HTTP Basic Authentication</h3>
+<p>The HTTP Basic Authentication scheme transmits credentials by Base64-encoding the username and password in the Authorization header:</p>
+
+<p><code>Authorization: Basic dXNlcjpwYXNzd29yZA==</code></p>
+
+<p>This is "user:password" Base64-encoded. Note again that this is not encrypted — Basic Auth only makes sense over HTTPS, where the entire HTTP header is encrypted by TLS.</p>
+
+<h3>3. JSON Web Tokens (JWT)</h3>
+<p>JSON Web Tokens, widely used for authentication in web APIs, consist of three Base64-encoded sections separated by dots:</p>
+
+<p><code>eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMTIzIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</code></p>
+
+<p>You can decode the header and payload sections of a JWT directly — they're just Base64-encoded JSON. Only the signature requires the secret key to verify.</p>
+
+<h3>4. Email Attachments (MIME)</h3>
+<p>As mentioned earlier, email attachments are Base64-encoded in the MIME format. When you attach a PDF to an email, your email client converts the binary PDF file to a Base64 string that can be safely transmitted through text-based email systems.</p>
+
+<h3>5. Storing Binary Data in Text-Only Systems</h3>
+<p>Databases, configuration files, and APIs that only handle text can store binary data (images, certificates, documents) as Base64 strings. This is common in:</p>
+<ul>
+  <li>Storing user avatars in JSON responses from REST APIs</li>
+  <li>Including SSL/TLS certificates in YAML configuration files</li>
+  <li>Passing binary data in URL query parameters (though URL-safe Base64 is used in this case)</li>
+</ul>
+
+<h2>URL-Safe Base64</h2>
+
+<p>Standard Base64 uses <code>+</code> and <code>/</code> characters, which have special meaning in URLs (<code>+</code> means space, <code>/</code> separates path segments). URL-safe Base64 replaces these characters:</p>
+<ul>
+  <li><code>+</code> → <code>-</code> (hyphen)</li>
+  <li><code>/</code> → <code>_</code> (underscore)</li>
+</ul>
+
+<p>URL-safe Base64 is commonly used in JWT tokens, Google's APIs, and anywhere Base64 data needs to appear in a URL without encoding issues.</p>
+
+<h2>How Much Bigger Is Base64?</h2>
+
+<p>Base64 encoding adds approximately <strong>33% overhead</strong> to the size of the original data. This is because every 3 bytes (24 bits) of input becomes 4 characters (32 bits) of Base64 output.</p>
+
+<p>For small files (icons, simple images), this overhead is acceptable. For large files (high-resolution images, videos, documents), the 33% size increase becomes significant. In these cases, it's better to link to the file rather than embed it as Base64.</p>
+
+<h2>Decoding Base64</h2>
+
+<p>Decoding is simply the reverse process: take the Base64 characters, look up their 6-bit values, concatenate all the bits, and split them into 8-bit bytes.</p>
+
+<p>Every modern programming language has built-in Base64 encode/decode functions:</p>
+<ul>
+  <li>JavaScript: <code>btoa(str)</code> / <code>atob(str)</code></li>
+  <li>Python: <code>base64.b64encode()</code> / <code>base64.b64decode()</code></li>
+  <li>PHP: <code>base64_encode()</code> / <code>base64_decode()</code></li>
+  <li>Java: <code>Base64.getEncoder().encodeToString()</code></li>
+  <li>Command line: <code>echo "text" | base64</code></li>
+</ul>
+
+<h2>Common Mistakes with Base64</h2>
+
+<ul>
+  <li><strong>Treating it as encryption.</strong> It's not. Anyone can decode it.</li>
+  <li><strong>Using it for large files.</strong> The 33% size overhead makes it impractical for images over ~10KB embedded in HTML/CSS.</li>
+  <li><strong>Forgetting padding.</strong> Some implementations require the <code>=</code> padding; others allow omitting it. If you see "Invalid Base64" errors, check for missing padding.</li>
+  <li><strong>Mixing up standard and URL-safe Base64.</strong> If your Base64 string will appear in a URL, use URL-safe Base64 (<code>-</code> and <code>_</code> instead of <code>+</code> and <code>/</code>).</li>
+</ul>
+
+<p>Base64 is a fundamental tool in any developer's toolkit. Once you understand what it does and why, you'll recognize it everywhere — in JWTs, API responses, email headers, and CSS files — and know exactly how to work with it.</p>
+
+</BlogLayout>

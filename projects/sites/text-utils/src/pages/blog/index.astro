@@ -1,0 +1,241 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import Header from '@adsites/ui-kit/Header.astro';
+import Footer from '@adsites/ui-kit/Footer.astro';
+import AdSlot from '@adsites/ui-kit/AdSlot.astro';
+import CookieConsent from '@adsites/ui-kit/CookieConsent.astro';
+import { SITE, TOOLS } from '../../config';
+
+const posts = [
+  {
+    slug: 'how-to-count-words',
+    title: 'How to Count Words in Your Text: A Complete Guide for Writers and Students',
+    description: 'Learn why word count matters, how word counters work, and practical tips for hitting your target word count in essays, articles, and more.',
+    date: '2025-07-10',
+    readingTime: 6,
+  },
+  {
+    slug: 'what-is-lorem-ipsum',
+    title: 'What Is Lorem Ipsum? History, Uses, and Modern Alternatives',
+    description: 'Discover the fascinating 2,000-year-old history of Lorem Ipsum placeholder text, why designers and developers still use it today, and modern alternatives.',
+    date: '2025-07-14',
+    readingTime: 7,
+  },
+  {
+    slug: 'url-slugs-guide',
+    title: 'What Is a URL Slug? A Complete Guide to SEO-Friendly URLs',
+    description: 'Everything you need to know about URL slugs — what they are, why they matter for SEO, and best practices for creating clean, readable URLs.',
+    date: '2025-07-18',
+    readingTime: 6,
+  },
+  {
+    slug: 'base64-encoding-explained',
+    title: 'Base64 Encoding Explained: What It Is, How It Works, and When to Use It',
+    description: 'A practical, jargon-free guide to Base64 encoding. Learn what it is, how the algorithm works, and real-world use cases in web development and APIs.',
+    date: '2025-07-22',
+    readingTime: 8,
+  },
+  {
+    slug: 'naming-conventions-guide',
+    title: 'camelCase, snake_case, PascalCase: The Developer\'s Guide to Naming Conventions',
+    description: 'A comprehensive guide to code naming conventions — camelCase, snake_case, PascalCase, kebab-case, and more. Includes when to use each and real examples.',
+    date: '2025-07-28',
+    readingTime: 7,
+  },
+  {
+    slug: 'clean-text-data',
+    title: 'How to Clean Messy Text Data: A Practical Guide for Writers and Analysts',
+    description: 'Messy text slows you down. Learn how to identify and fix common text problems — extra spaces, duplicate lines, inconsistent formatting, and more.',
+    date: '2025-08-01',
+    readingTime: 6,
+  },
+  {
+    slug: 'text-case-guide',
+    title: 'UPPERCASE, lowercase, Title Case: A Complete Guide to Text Case in Writing',
+    description: 'When do you use title case vs sentence case? What about ALL CAPS? This guide covers text case rules for academic writing, headlines, branding, and code.',
+    date: '2025-08-04',
+    readingTime: 5,
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blog — {SITE.name}</title>
+    <meta name="description" content="Guides, tips, and explanations for writers, developers, and students. Learn about text tools, URL slugs, Base64 encoding, naming conventions, and more." />
+    <link rel="canonical" href={`${SITE.url}/blog`} />
+
+    {SITE.adsenseClientId && (
+      <>
+        <meta name="google-adsense-account" content={SITE.adsenseClientId} />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClientId}`}
+          crossorigin="anonymous"
+        />
+      </>
+    )}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      (function() {
+        try {
+          const t = localStorage.getItem('theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+          if (t === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <Header siteName={SITE.name} siteUrl={SITE.url} tools={TOOLS} />
+
+    <main>
+      <section class="blog-hero">
+        <div class="container">
+          <h1>Blog & Guides</h1>
+          <p class="blog-hero-sub">Practical guides on text tools, writing, SEO, and web development — written for writers, students, and developers.</p>
+        </div>
+      </section>
+
+      <AdSlot position="top" />
+
+      <section class="blog-grid-section container">
+        <div class="posts-grid">
+          {posts.map((post) => (
+            <article class="post-card">
+              <div class="post-meta">
+                <time datetime={post.date}>
+                  {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
+                <span class="post-reading-time">{post.readingTime} min read</span>
+              </div>
+              <h2 class="post-title">
+                <a href={`/blog/${post.slug}`}>{post.title}</a>
+              </h2>
+              <p class="post-description">{post.description}</p>
+              <a href={`/blog/${post.slug}`} class="post-link">Read article →</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+
+    <AdSlot position="bottom" />
+    <Footer siteName={SITE.name} siteUrl={SITE.url} />
+    <CookieConsent />
+  </body>
+</html>
+
+<style>
+  .blog-hero {
+    padding: var(--space-16) 0 var(--space-10);
+    text-align: center;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .blog-hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-3);
+  }
+
+  .blog-hero-sub {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-inline: auto;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .blog-grid-section {
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .post-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: all var(--transition-base);
+  }
+
+  .post-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .post-reading-time {
+    padding: 2px var(--space-2);
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .post-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+  }
+
+  .post-title a {
+    color: var(--color-text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .post-title a:hover {
+    color: var(--color-accent);
+  }
+
+  .post-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    flex: 1;
+  }
+
+  .post-link {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent);
+    margin-top: var(--space-2);
+  }
+
+  .post-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

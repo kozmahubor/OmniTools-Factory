@@ -141,6 +141,30 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
           </div>
         </div>
       </section>
+      <!-- Blog Section -->
+      <section class="blog-section container">
+        <div class="blog-section-header">
+          <h2>From the Blog</h2>
+          <a href="/blog" class="see-all-link">See all articles →</a>
+        </div>
+        <div class="blog-preview-grid">
+          <article class="blog-preview-card">
+            <div class="blog-preview-meta">6 min read</div>
+            <h3><a href="/blog/how-to-count-words">How to Count Words in Your Text: A Complete Guide</a></h3>
+            <p>Learn why word count matters and practical tips for hitting your target in essays, articles, and more.</p>
+          </article>
+          <article class="blog-preview-card">
+            <div class="blog-preview-meta">6 min read</div>
+            <h3><a href="/blog/url-slugs-guide">What Is a URL Slug? A Complete Guide to SEO-Friendly URLs</a></h3>
+            <p>Everything you need to know about URL slugs, why they matter for SEO, and best practices.</p>
+          </article>
+          <article class="blog-preview-card">
+            <div class="blog-preview-meta">7 min read</div>
+            <h3><a href="/blog/naming-conventions-guide">camelCase, snake_case, PascalCase: Developer's Naming Guide</a></h3>
+            <p>A comprehensive guide to code naming conventions across all major programming languages.</p>
+          </article>
+        </div>
+      </section>
     </main>
 
     <AdSlot position="bottom" />
@@ -276,5 +300,83 @@ import { SITE, TOOLS, TOOL_CATEGORIES } from '../config';
     .tools-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* Blog Section */
+  .blog-section {
+    padding: var(--space-16) var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .blog-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-8);
+  }
+
+  .blog-section-header h2 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .see-all-link {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent);
+  }
+
+  .see-all-link:hover {
+    text-decoration: underline;
+  }
+
+  .blog-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .blog-preview-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-base);
+  }
+
+  .blog-preview-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+  }
+
+  .blog-preview-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .blog-preview-card h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+    line-height: var(--line-height-snug);
+  }
+
+  .blog-preview-card h3 a {
+    color: var(--color-text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .blog-preview-card h3 a:hover {
+    color: var(--color-accent);
+  }
+
+  .blog-preview-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
   }
 </style>

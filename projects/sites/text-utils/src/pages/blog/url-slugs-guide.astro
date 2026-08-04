@@ -1,0 +1,140 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="What Is a URL Slug? A Complete Guide to SEO-Friendly URLs"
+  description="Everything you need to know about URL slugs — what they are, why they matter for SEO, and best practices for creating clean, readable URLs."
+  date="2025-07-18"
+  readingTime={6}
+  canonicalPath="/blog/url-slugs-guide"
+>
+
+<p>If you've ever noticed that a blog post URL looks like <code>yoursite.com/blog/what-is-a-url-slug</code> instead of <code>yoursite.com/blog?id=4827</code>, you've seen a URL slug in action. That final part — <code>what-is-a-url-slug</code> — is the slug. It's one of the simplest and most impactful things you can optimize in your web presence.</p>
+
+<h2>What Is a URL Slug?</h2>
+
+<p>A URL slug is the part of a web address that identifies a specific page, typically at the end of the URL. It's the human-readable portion that describes the page's content. The term "slug" comes from traditional typesetting and newspaper publishing, where a "slug" was a short name given to an article for internal reference.</p>
+
+<p>Anatomy of a URL:</p>
+<ul>
+  <li><code>https://</code> — Protocol</li>
+  <li><code>fixmystring.com</code> — Domain</li>
+  <li><code>/blog/</code> — Path/directory</li>
+  <li><code>what-is-a-url-slug</code> — The slug</li>
+</ul>
+
+<p>The slug is everything after the last slash (or after a specific directory segment). It uniquely identifies the page within its section of the site.</p>
+
+<h2>Why URL Slugs Matter for SEO</h2>
+
+<p>Search engines — Google in particular — read and analyze URL structure as one of many signals when determining how to rank a page. A clear, descriptive URL slug provides several SEO benefits:</p>
+
+<h3>Keywords in the URL</h3>
+<p>Having relevant keywords in your URL is a confirmed (though minor) ranking factor. A URL like <code>/blog/how-to-bake-sourdough-bread</code> tells Google immediately what the page is about, reinforcing the relevance of the content inside. A URL like <code>/blog/post-2847</code> provides no such signal.</p>
+
+<h3>Click-Through Rate in Search Results</h3>
+<p>When your URL appears in Google search results, users can see part of it below the title. A clear, readable URL builds trust and encourages clicks. Users are more likely to click on <code>fixmystring.com/tools/word-counter</code> than <code>fixmystring.com/index.php?tool=wc&id=12</code>.</p>
+
+<h3>Link Sharing and Anchor Text</h3>
+<p>When people share links without custom anchor text — pasting a URL into a forum post, email, or social media — the URL itself becomes the visible text. A descriptive slug makes the link self-explanatory and more likely to be clicked.</p>
+
+<h3>Breadcrumb Navigation</h3>
+<p>Google often converts URL paths into breadcrumb navigation in search results. A URL like <code>/blog/category/url-slugs-guide</code> generates the breadcrumb "Blog > Category > Url Slugs Guide" which appears in the search result, providing additional context.</p>
+
+<h2>What Makes a Good URL Slug?</h2>
+
+<p>Creating an effective URL slug isn't just about putting your keywords in — it's about following a set of best practices that make your URLs clean, durable, and user-friendly.</p>
+
+<h3>Use Hyphens, Not Underscores</h3>
+<p>This is the single most important technical rule. Google treats hyphens as word separators in URLs. Underscores are not word separators — Google reads <code>url_slug_guide</code> as a single word "urlslugguide," not three separate words.</p>
+
+<ul>
+  <li>✅ <code>/blog/url-slug-guide</code></li>
+  <li>❌ <code>/blog/url_slug_guide</code></li>
+</ul>
+
+<h3>Use Lowercase Only</h3>
+<p>URLs are case-sensitive on most servers. <code>/Blog/URL-Slug-Guide</code> and <code>/blog/url-slug-guide</code> are technically different pages, which can cause duplicate content issues. Always use lowercase.</p>
+
+<ul>
+  <li>✅ <code>/blog/url-slug-guide</code></li>
+  <li>❌ <code>/Blog/URL-Slug-Guide</code></li>
+</ul>
+
+<h3>Remove Stop Words (Usually)</h3>
+<p>Stop words are common words like "a," "an," "the," "is," "of," "and," etc. You can usually remove them from slugs without losing meaning. This makes slugs shorter and cleaner.</p>
+
+<ul>
+  <li>✅ <code>/blog/complete-guide-url-slugs</code></li>
+  <li>❌ <code>/blog/a-complete-guide-to-url-slugs</code></li>
+</ul>
+
+<p>However, if removing a stop word changes the meaning or makes the URL confusing, keep it. "Rock and Roll" might become confusing as "rock-roll."</p>
+
+<h3>Keep Slugs Short but Descriptive</h3>
+<p>There's no hard character limit, but shorter is generally better. Aim for 3–5 meaningful words. Avoid keyword stuffing — <code>/blog/best-free-url-slug-generator-tool-online-seo-2025</code> is spam, not optimization.</p>
+
+<ul>
+  <li>✅ <code>/blog/url-slug-guide</code></li>
+  <li>❌ <code>/blog/what-is-a-url-slug-how-to-create-seo-friendly-url-slugs-best-practices-2025</code></li>
+</ul>
+
+<h3>Remove Special Characters and Spaces</h3>
+<p>Special characters (!, @, #, $, %, etc.) and spaces are either invalid in URLs or must be percent-encoded (<code>%20</code> for a space). Both reduce readability and can cause technical issues. Replace spaces with hyphens and remove special characters.</p>
+
+<ul>
+  <li>✅ <code>/blog/whats-a-url-slug</code></li>
+  <li>❌ <code>/blog/what's%20a%20url%20slug%3F</code></li>
+</ul>
+
+<h3>Use Your Target Keyword</h3>
+<p>Your primary keyword — the main term you want the page to rank for — should appear in the slug. If you're writing about "sourdough bread recipes," your slug should include those exact words or close variants.</p>
+
+<h2>Common URL Slug Mistakes to Avoid</h2>
+
+<h3>Using Dates Unless Necessary</h3>
+<p>Adding the year or date to a slug (<code>/blog/url-slug-guide-2024</code>) makes your content look outdated quickly. Unless your content is inherently time-sensitive (news, event coverage), keep dates out of slugs.</p>
+
+<h3>Auto-Generated Ugly Slugs</h3>
+<p>Many CMS platforms automatically generate slugs from your page title, including all stop words and sometimes even punctuation. Always review and edit auto-generated slugs before publishing.</p>
+
+<h3>Changing Slugs After Publishing</h3>
+<p>This is the most dangerous mistake. Once a page has been indexed by Google and linked to by other sites, changing its URL breaks all those links and loses accumulated SEO value. If you must change a URL, set up a proper 301 permanent redirect from the old URL to the new one.</p>
+
+<h3>Duplicate Slugs</h3>
+<p>If your site has multiple pages with the same slug in different sections, this can cause confusion and duplicate content issues. Ensure each page has a unique slug within its URL path.</p>
+
+<h2>URL Slugs in Different Platforms</h2>
+
+<h3>WordPress</h3>
+<p>WordPress automatically generates slugs from your post title but allows editing via the "Permalink" field below the title editor. Set your permalink structure to <code>/%postname%/</code> in Settings > Permalinks for clean slugs.</p>
+
+<h3>Shopify</h3>
+<p>Shopify generates product slugs automatically. You can edit them in the SEO section of each product page under "URL and handle."</p>
+
+<h3>Custom Code</h3>
+<p>If you're building a website from scratch, you'll create slugs programmatically. The Text to Slug tool on this site converts any text string into a clean, URL-safe slug — useful for generating slugs for blog posts, product names, or category pages.</p>
+
+<h2>The Text-to-Slug Conversion Process</h2>
+
+<p>Here's what a slug generator needs to do to convert plain text to a valid URL slug:</p>
+
+<ol>
+  <li>Convert all characters to lowercase</li>
+  <li>Replace spaces with hyphens</li>
+  <li>Remove or replace characters with accents/diacritics (é → e, ü → u)</li>
+  <li>Remove all remaining special characters (punctuation, symbols)</li>
+  <li>Collapse multiple consecutive hyphens into a single hyphen</li>
+  <li>Strip leading and trailing hyphens</li>
+</ol>
+
+<p>So "The Best URL Slug Guide (2025)!" becomes <code>best-url-slug-guide-2025</code>.</p>
+
+<h2>Conclusion</h2>
+
+<p>URL slugs are a small but meaningful part of SEO and user experience. A well-crafted slug communicates relevance to search engines, builds trust with users, and remains functional for years. The best slugs are short, descriptive, lowercase, hyphenated, and contain your primary keyword.</p>
+
+<p>Creating good slugs is a habit, not a one-time task. Make reviewing and editing auto-generated slugs part of your publishing workflow, and you'll have a cleaner, more professional web presence over time.</p>
+
+</BlogLayout>

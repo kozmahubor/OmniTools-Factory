@@ -1,0 +1,175 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="camelCase, snake_case, PascalCase: The Developer's Guide to Naming Conventions"
+  description="A comprehensive guide to code naming conventions — camelCase, snake_case, PascalCase, kebab-case, and more. Includes when to use each and real examples."
+  date="2025-07-28"
+  readingTime={7}
+  canonicalPath="/blog/naming-conventions-guide"
+>
+
+<p>Every programmer has to name things: variables, functions, classes, files, database columns, API endpoints. The way you name these things — the "naming convention" you follow — affects readability, maintainability, and how well your code integrates with the tools and frameworks in your ecosystem.</p>
+
+<p>This guide covers every major naming convention, when to use each, and how different programming languages and contexts approach this fundamental question.</p>
+
+<h2>Why Naming Conventions Matter</h2>
+
+<p>Imagine reading code where variables are named <code>CustomerFirstName</code>, <code>customer_last_name</code>, <code>customerAge</code>, and <code>CUSTOMER-ID</code> — four different naming styles for related concepts. This inconsistency creates unnecessary cognitive load. Your brain has to process not just what the variable <em>means</em> but also why it's named differently from its siblings.</p>
+
+<p>Consistent naming conventions solve this by creating predictability. When you've established that all functions use camelCase and all classes use PascalCase, you can instantly tell what type of thing you're looking at just from the name format.</p>
+
+<h2>The Major Naming Conventions</h2>
+
+<h3>camelCase</h3>
+<p>camelCase starts with a lowercase letter, and each subsequent word starts with an uppercase letter. The name comes from the way the uppercase letters create "humps" like a camel's back.</p>
+
+<p>Examples: <code>firstName</code>, <code>getUserById</code>, <code>totalPriceWithTax</code>, <code>isUserLoggedIn</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>Variables and function names in JavaScript, Java, C#, Go, Dart</li>
+  <li>JSON property names (convention, not a strict standard)</li>
+  <li>React component state variables</li>
+</ul>
+
+<h3>PascalCase (UpperCamelCase)</h3>
+<p>PascalCase is like camelCase but the first letter is also uppercase. Every word starts with a capital letter. Also called "UpperCamelCase" or "StudlyCase."</p>
+
+<p>Examples: <code>UserAccount</code>, <code>GetUserById</code>, <code>ShoppingCart</code>, <code>HttpResponseMessage</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>Class names in virtually all languages (Java, C#, Python, JavaScript)</li>
+  <li>Component names in React and Vue</li>
+  <li>Interface names in TypeScript and C#</li>
+  <li>Methods in C# and some Ruby conventions</li>
+  <li>Public methods in Go (exported identifiers)</li>
+</ul>
+
+<h3>snake_case</h3>
+<p>snake_case uses all lowercase letters with words separated by underscores. The name refers to the horizontal appearance, like a snake lying flat.</p>
+
+<p>Examples: <code>first_name</code>, <code>get_user_by_id</code>, <code>total_price_with_tax</code>, <code>user_id</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>Variables and functions in Python (the official style guide, PEP 8, mandates snake_case)</li>
+  <li>Variables and functions in Ruby</li>
+  <li>Database column names (nearly universal convention)</li>
+  <li>File names in Linux/Unix systems</li>
+  <li>Variables in PHP (common convention)</li>
+  <li>Rust uses snake_case for variables and functions</li>
+</ul>
+
+<h3>SCREAMING_SNAKE_CASE (UPPER_SNAKE_CASE)</h3>
+<p>Like snake_case but all capitals. This is conventionally used for constants — values that never change after being set.</p>
+
+<p>Examples: <code>MAX_RETRY_COUNT</code>, <code>API_BASE_URL</code>, <code>DEFAULT_TIMEOUT_MS</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>Constants in Java, JavaScript/TypeScript, Python, C/C++</li>
+  <li>Environment variable names (almost universally)</li>
+  <li>Enum values in many languages</li>
+</ul>
+
+<h3>kebab-case (hyphen-case)</h3>
+<p>kebab-case uses all lowercase letters with words separated by hyphens. The name comes from the image of words skewered together like kebab on a stick.</p>
+
+<p>Examples: <code>first-name</code>, <code>user-profile-settings</code>, <code>background-color</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>CSS class names and property names (the standard in CSS)</li>
+  <li>HTML attribute names</li>
+  <li>URL slugs and file names in web projects</li>
+  <li>Vue component names in templates</li>
+  <li>NPM package names (<code>react-router-dom</code>, <code>lodash-es</code>)</li>
+</ul>
+
+<p>Note: kebab-case cannot be used as variable names in most programming languages because the hyphen is the subtraction operator. <code>let first-name = "John"</code> is not valid JavaScript — it looks like subtraction.</p>
+
+<h3>dot.case</h3>
+<p>Words separated by dots. Less common for variable naming but appears in specific contexts.</p>
+
+<p>Examples: <code>system.user.id</code>, <code>app.config.database</code></p>
+
+<p><strong>Used for:</strong></p>
+<ul>
+  <li>Configuration keys (Spring Boot, .env files)</li>
+  <li>Namespace identifiers in some languages</li>
+  <li>Log categories</li>
+</ul>
+
+<h2>Language-by-Language Overview</h2>
+
+| Language | Variables/Functions | Classes | Constants | Files |
+|---|---|---|---|---|
+| JavaScript/TypeScript | camelCase | PascalCase | UPPER_SNAKE | kebab-case |
+| Python | snake_case | PascalCase | UPPER_SNAKE | snake_case |
+| Java | camelCase | PascalCase | UPPER_SNAKE | PascalCase |
+| C# | camelCase | PascalCase | PascalCase | PascalCase |
+| Ruby | snake_case | PascalCase | UPPER_SNAKE | snake_case |
+| Go | camelCase | PascalCase | PascalCase | snake_case |
+| Rust | snake_case | PascalCase | UPPER_SNAKE | snake_case |
+| PHP | camelCase | PascalCase | UPPER_SNAKE | snake_case |
+| Swift | camelCase | PascalCase | camelCase | PascalCase |
+
+<h2>Special Conventions</h2>
+
+<h3>Hungarian Notation</h3>
+<p>Hungarian notation prefixes variable names with type information: <code>strName</code> (string), <code>intAge</code> (integer), <code>bIsActive</code> (boolean). This was common in older C and Win32 code.</p>
+
+<p>Modern IDEs make Hungarian notation largely unnecessary — you can hover over any variable to see its type. Most style guides today discourage it. However, you might still see it in legacy code or in specific domains like Microsoft Win32 API development.</p>
+
+<h3>Leading Underscores</h3>
+<p>In many languages, a leading underscore signals that a variable or method is "private" or "internal":</p>
+<ul>
+  <li><code>_privateMethod()</code> — Python convention for "private" (not truly enforced)</li>
+  <li><code>__name</code> — Python name mangling for true private attributes</li>
+  <li><code>_internalVariable</code> — common in JavaScript before private class fields (<code>#field</code>) were available</li>
+</ul>
+
+<h3>Trailing Underscores</h3>
+<p>A trailing underscore avoids clashes with reserved keywords: <code>class_</code>, <code>type_</code>, <code>id_</code>. This is occasionally used in Python when the ideal variable name is a reserved word.</p>
+
+<h3>Interface Prefixes</h3>
+<p>In C# and TypeScript, interfaces are often prefixed with <code>I</code>:</p>
+<ul>
+  <li><code>IUserRepository</code></li>
+  <li><code>IDisposable</code></li>
+</ul>
+<p>This is strongly conventional in C# and mixed in TypeScript — the TypeScript team itself recommends against the <code>I</code> prefix in their own code.</p>
+
+<h2>Naming Things Well: Beyond Convention</h2>
+
+<p>Following the right case style is the floor, not the ceiling, of good naming. Here are higher-level principles:</p>
+
+<h3>Be Descriptive, Not Clever</h3>
+<p><code>getUserAccountBalance()</code> beats <code>getUAB()</code> and <code>fetch()</code>. Abbreviations save characters while typing but cost seconds of confusion when reading. Code is read far more often than it is written.</p>
+
+<h3>Use the Problem Domain's Vocabulary</h3>
+<p>If you're building an e-commerce system, use terms from e-commerce: <code>Order</code>, <code>LineItem</code>, <code>SKU</code>, <code>fulfillmentStatus</code>. This aligns the code with how stakeholders and domain experts talk about the system.</p>
+
+<h3>Boolean Variables Should Be Yes/No Questions</h3>
+<p>Prefix boolean variables with <code>is</code>, <code>has</code>, <code>can</code>, or <code>should</code>:</p>
+<ul>
+  <li><code>isActive</code>, <code>hasPermission</code>, <code>canEdit</code>, <code>shouldRedirect</code></li>
+</ul>
+<p>This makes conditionals read naturally: <code>if (isActive)</code> vs. <code>if (active)</code>.</p>
+
+<h3>Function Names Should Be Verbs</h3>
+<p>Functions <em>do</em> things, so they should start with a verb: <code>get</code>, <code>set</code>, <code>create</code>, <code>update</code>, <code>delete</code>, <code>validate</code>, <code>calculate</code>, <code>render</code>, <code>handle</code>.</p>
+
+<h3>Avoid Meaningless Names</h3>
+<p>Names like <code>data</code>, <code>info</code>, <code>temp</code>, <code>obj</code>, <code>thing</code>, and single-letter variables (outside of loop counters and mathematical contexts) give readers no useful information. What kind of data? Information about what?</p>
+
+<h2>Converting Between Cases</h2>
+
+<p>When you need to switch from one naming convention to another — say, converting a JSON API response (camelCase) to a Python variable (snake_case) — it's helpful to have a reliable tool. The Case Converter tool on this site handles these transformations instantly, supporting camelCase, PascalCase, snake_case, SCREAMING_SNAKE_CASE, and kebab-case.</p>
+
+<p>Naming conventions are one of those things that seem trivial until you work on a large codebase with an inconsistent approach. The payoff for consistency is enormous: faster code reviews, clearer communication between team members, and code that documents itself.</p>
+
+</BlogLayout>
