@@ -55,6 +55,30 @@ const faq = [
       <div class="tool-result-content" id="result"></div>
     </div>
   </div>
+
+  <section class="tool-guide">
+    <h2>How to Use the Case Converter</h2>
+    <p>Paste or type your text in the box above, then click any case conversion button to instantly transform your text. Click the "Copy" button to copy the result to your clipboard.</p>
+
+    <h3>Supported Case Styles</h3>
+    <p><strong>UPPERCASE</strong> converts every letter to its capital form. Useful for headings, emphasis, and acronyms. Example: "hello world" → "HELLO WORLD".</p>
+    <p><strong>lowercase</strong> converts every letter to its small form. Useful for normalizing data, email addresses, and URLs. Example: "HELLO World" → "hello world".</p>
+    <p><strong>Title Case</strong> capitalizes the first letter of each major word, following standard English title capitalization rules. Example: "the quick brown fox" → "The Quick Brown Fox".</p>
+    <p><strong>Sentence case</strong> capitalizes only the first letter of each sentence. Example: "hello world. goodbye moon." → "Hello world. Goodbye moon."</p>
+    <p><strong>camelCase</strong> removes spaces and capitalizes each word after the first. Standard for JavaScript and Java variables. Example: "user first name" → "userFirstName".</p>
+    <p><strong>PascalCase</strong> removes spaces and capitalizes every word including the first. Used for class names in most programming languages. Example: "user account" → "UserAccount".</p>
+    <p><strong>snake_case</strong> replaces spaces with underscores and lowercases everything. Standard for Python variables and database column names. Example: "User Name" → "user_name".</p>
+    <p><strong>kebab-case</strong> replaces spaces with hyphens and lowercases everything. Standard for CSS class names and URL slugs. Example: "Main Header" → "main-header".</p>
+    <p><strong>CONSTANT_CASE</strong> replaces spaces with underscores and uppercases everything. Used for constants and environment variables. Example: "api base url" → "API_BASE_URL".</p>
+
+    <h3>When to Use Each Case</h3>
+    <ul>
+      <li><strong>Writing:</strong> Use Title Case for headlines and Sentence case for subheadings.</li>
+      <li><strong>Programming:</strong> Use camelCase for JavaScript variables, PascalCase for classes, snake_case for Python, and CONSTANT_CASE for constants.</li>
+      <li><strong>Web development:</strong> Use kebab-case for CSS classes and URL slugs.</li>
+      <li><strong>Data processing:</strong> Use lowercase to normalize text data for comparison and matching.</li>
+    </ul>
+  </section>
 </ToolLayout>
 
 <style>

@@ -53,6 +53,25 @@ const faq = [
       <div class="tool-result-content" id="result"></div>
     </div>
   </div>
+
+  <section class="tool-guide">
+    <h2>Understanding String Encoding</h2>
+    <p>String encoding converts text characters into a different format for safe storage, transmission, or display. Different encoding systems exist because different contexts have different rules about which characters are "safe."</p>
+
+    <h3>Encoding Types Explained</h3>
+    <p><strong>HTML Entities:</strong> Converts special characters into HTML-safe codes. For example, <code>&lt;</code> becomes <code>&amp;lt;</code> and <code>&amp;</code> becomes <code>&amp;amp;</code>. Essential for preventing XSS (cross-site scripting) attacks and displaying code in web pages.</p>
+    <p><strong>URL Encoding (Percent Encoding):</strong> Converts characters that aren't allowed in URLs into <code>%XX</code> format. Spaces become <code>%20</code>, special characters like <code>?</code> and <code>&amp;</code> get encoded so they aren't misinterpreted as URL syntax.</p>
+    <p><strong>Base64:</strong> Converts any data (text or binary) into a string of 64 safe ASCII characters. Used for embedding images in CSS, JWT tokens, email attachments, and API data transfer.</p>
+    <p><strong>Unicode Escapes:</strong> Represents characters using their Unicode code point in <code>\uXXXX</code> format. Used in JavaScript, JSON, and other programming contexts where non-ASCII characters need a safe text representation.</p>
+
+    <h3>When to Use Each</h3>
+    <ul>
+      <li><strong>HTML entities:</strong> When inserting user-generated content into HTML pages safely.</li>
+      <li><strong>URL encoding:</strong> When building URLs with query parameters that contain special characters.</li>
+      <li><strong>Base64:</strong> When embedding binary data in text formats, or working with JWT tokens and APIs.</li>
+      <li><strong>Unicode escapes:</strong> When you need to represent non-Latin characters in ASCII-only source code.</li>
+    </ul>
+  </section>
 </ToolLayout>
 
 <style>

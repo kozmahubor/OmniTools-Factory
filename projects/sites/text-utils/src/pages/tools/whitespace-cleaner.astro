@@ -60,6 +60,25 @@ const faq = [
       <div class="tool-result-content" id="result"></div>
     </div>
   </div>
+
+  <section class="tool-guide">
+    <h2>What Is Whitespace and Why Clean It?</h2>
+    <p>Whitespace refers to invisible characters in text — spaces, tabs, line breaks, and other non-printing characters. While whitespace is essential for readability, extra or inconsistent whitespace causes problems in data processing, code, and published content.</p>
+
+    <h3>Common Whitespace Problems</h3>
+    <p><strong>Trailing spaces:</strong> Invisible spaces at the end of lines. These are the most common whitespace issue, often introduced by copy-pasting from formatted documents. They can cause string comparison failures in code and messy diffs in version control.</p>
+    <p><strong>Multiple consecutive spaces:</strong> Two or more spaces between words where only one is needed. Common when copying from PDFs or formatted emails.</p>
+    <p><strong>Mixed tabs and spaces:</strong> Inconsistent use of tabs and spaces for indentation. This is a frequent source of formatting issues in code and can cause errors in languages like Python where indentation is significant.</p>
+    <p><strong>Extra blank lines:</strong> Multiple consecutive blank lines between paragraphs. While one blank line is standard for separating paragraphs, two or more looks unprofessional.</p>
+
+    <h3>When to Use This Tool</h3>
+    <ul>
+      <li><strong>After copy-pasting:</strong> Clean up text copied from PDFs, web pages, or formatted documents.</li>
+      <li><strong>Before publishing:</strong> Ensure your content has consistent, clean formatting.</li>
+      <li><strong>Code cleanup:</strong> Remove trailing whitespace and normalize indentation before committing code.</li>
+      <li><strong>Data preparation:</strong> Clean whitespace from CSV files, database exports, or user-submitted content.</li>
+    </ul>
+  </section>
 </ToolLayout>
 
 <style>
