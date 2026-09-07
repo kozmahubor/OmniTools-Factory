@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'text-to-slug')!;
 const faq = [
-  { question: 'What is a URL Slug?', answer: 'A slug is the user-friendly, SEO-optimized portion of a web URL that identifies a specific page (e.g., "my-first-blog-post").' },
-  { question: 'Does this handle accented characters?', answer: 'Yes! Accented and international characters (e.g., é, á, ő, ü, ñ) are automatically transliterated to standard Latin letters.' },
-  { question: 'What separators can I use?', answer: 'You can choose between hyphens (-), underscores (_), dots (.), or custom separator characters.' }
+  { question: 'What is a URL Slug?', answer: 'A slug is the user-friendly, SEO-optimized portion of a web URL that identifies a specific page. For example, in "example.com/blog/what-is-a-url-slug", the slug is "what-is-a-url-slug". Good slugs are lowercase, use hyphens as separators, contain no special characters, and include the page\'s target keyword.' },
+  { question: 'Does this handle accented characters?', answer: 'Yes! Accented and international characters (é, á, ő, ü, ñ, ç, à, etc.) are automatically transliterated to their closest standard ASCII Latin equivalents before generating the slug. This ensures slugs are universally compatible with all web servers and browsers.' },
+  { question: 'What separators can I use?', answer: 'You can choose between hyphens (-), underscores (_), dots (.), or no separator (concatenation). Hyphens are strongly recommended by Google as the preferred URL word separator. Google\'s John Mueller has confirmed that hyphens are treated as word separators in URLs, while underscores are not.' },
+  { question: 'Why should slugs be lowercase?', answer: 'Web servers are case-sensitive on most operating systems (Linux). "My-Page" and "my-page" are different URLs on Linux servers. Lowercase slugs avoid duplicate content issues, 404 errors caused by capitalization mismatches, and are the universal convention for web URLs.' },
+  { question: 'How long should a URL slug be?', answer: 'Keep slugs as short as possible while still being descriptive. As a rule of thumb: 3-5 words is ideal, under 60 characters is preferred. Drop stop words (the, a, an, of, in, for) to shorten slugs. For example, "how-to-count-words" is better than "how-to-count-the-number-of-words-in-a-text".' },
+  { question: 'Should I include dates in slugs?', answer: 'Generally no, especially for evergreen content. Date-based slugs ("/2024/01/15/article-title") make URLs longer, look outdated when the content is updated, and are harder to redirect if you reorganize your site. Use date-free slugs like "/blog/article-title" for content that will remain relevant over time.' },
+  { question: 'Can I change a slug after publishing?', answer: 'Yes, but be careful. Changing a published URL breaks all existing inbound links, social media shares, and bookmarks unless you set up a 301 redirect from the old URL to the new one. Search engines will follow 301 redirects, but you may temporarily lose ranking. Always plan slugs carefully before publishing.' },
 ];
 ---
 
@@ -66,17 +70,49 @@ const faq = [
 
   <section class="tool-guide">
     <h2>What Is a URL Slug?</h2>
-    <p>A URL slug is the human-readable part of a web address that identifies a specific page. For example, in <code>example.com/blog/what-is-a-url-slug</code>, the slug is "what-is-a-url-slug". Good slugs are short, descriptive, and contain your target keywords.</p>
+    <p>A URL slug is the human-readable, SEO-friendly part of a web address that identifies a specific page. For example, in <code>example.com/blog/what-is-a-url-slug</code>, the slug is <code>what-is-a-url-slug</code>. Slugs appear in browser address bars, search engine results, and link previews — making them one of the most visible elements of your URL structure.</p>
 
     <h3>How This Tool Creates Slugs</h3>
-    <p>The slug generator performs these transformations automatically: converts all text to lowercase, replaces spaces with hyphens, removes special characters and punctuation, handles accented characters (é → e, ü → u), and collapses multiple consecutive hyphens into one.</p>
+    <p>The slug generator automatically applies the following transformations to produce a clean, URL-safe string:</p>
+    <ol>
+      <li>Converts all text to lowercase</li>
+      <li>Transliterates accented characters to ASCII equivalents (é → e, ü → u, ő → o, ñ → n)</li>
+      <li>Replaces spaces with your chosen separator (default: hyphen)</li>
+      <li>Removes all characters that are not alphanumeric or the separator</li>
+      <li>Collapses multiple consecutive separators into one</li>
+      <li>Trims separators from the start and end of the output</li>
+    </ol>
 
     <h3>Why Slugs Matter for SEO</h3>
     <ul>
-      <li><strong>Search engine ranking:</strong> Keywords in the URL are a confirmed ranking factor in Google's algorithm.</li>
-      <li><strong>Click-through rates:</strong> Clean, readable URLs in search results build trust and encourage clicks.</li>
-      <li><strong>Link sharing:</strong> When shared on social media or forums, descriptive URLs are self-explanatory.</li>
-      <li><strong>Accessibility:</strong> Screen readers can parse descriptive slugs more easily than cryptic IDs.</li>
+      <li><strong>Keyword signals:</strong> Google reads words in URLs as additional keyword signals. A URL like <code>/blog/how-to-count-words</code> provides clear topical signals that support the page's ranking for related queries.</li>
+      <li><strong>Click-through rates (CTR):</strong> Clean, descriptive URLs in search results build user trust and increase click-through rates. Users are more likely to click a link when the URL previews exactly what they'll find.</li>
+      <li><strong>Link sharing:</strong> When posted on social media, forums, or in emails, a well-formed slug is self-describing and builds credibility even without anchor text.</li>
+      <li><strong>Accessibility:</strong> Screen readers can parse descriptive slug words, making pages more accessible to visually impaired users navigating via URL.</li>
+      <li><strong>Breadcrumb and navigation clarity:</strong> In sites with hierarchical URL structures, descriptive slugs make the site structure clear from the URL alone.</li>
+    </ul>
+
+    <h3>Slug Best Practices</h3>
+    <ul>
+      <li><strong>Use hyphens, not underscores:</strong> Google treats hyphens as word separators in URLs. Underscores are not treated as separators, meaning "word_counter" is read as a single token "wordcounter" by Google. Always use hyphens for multi-word slugs.</li>
+      <li><strong>Keep slugs short:</strong> 3–5 words is the sweet spot. Drop filler words (the, a, an, of, for) that don't add keyword value. "how-count-words" is cleaner than "how-to-count-the-number-of-words".</li>
+      <li><strong>Include your target keyword:</strong> The primary keyword you want to rank for should appear in the slug. For a page about word counting, <code>word-counter</code> is a better slug than <code>tool-1</code>.</li>
+      <li><strong>Avoid dates in slugs:</strong> Date-based slugs (/2024/01/how-to-count-words) make URLs longer and look outdated when content is refreshed. Use date-free slugs for evergreen content.</li>
+      <li><strong>Never change slugs after publishing:</strong> Changing a live URL breaks inbound links and bookmarks. Plan slugs before publishing and use 301 redirects if changes become unavoidable.</li>
+      <li><strong>Avoid stop words:</strong> Words like "the", "a", "for", "in", "of" dilute your slug's keyword density without adding SEO value. Remove them.</li>
+    </ul>
+
+    <h3>Separator Choice: Hyphens vs. Underscores vs. Dots</h3>
+    <p><strong>Hyphens (<code>-</code>)</strong> are the Google-recommended separator for URL slugs. They are treated as word separators, meaning <code>word-counter</code> is interpreted as two separate words. This is the default and recommended choice for all content URLs.</p>
+    <p><strong>Underscores (<code>_</code>)</strong> are <em>not</em> treated as word separators by Google. <code>word_counter</code> is read as one token. Underscores are acceptable for database identifiers, API parameters, and file names where you need a word-joiner rather than a word-separator.</p>
+    <p><strong>Dots (<code>.</code>)</strong> are occasionally used in file download URLs (e.g., <code>report.2025.pdf</code>) but are generally not recommended for standard page slugs, as dots can confuse browsers and server routing in some configurations.</p>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/case-converter">Case Converter</a> — Convert text to lowercase before generating a slug.</li>
+      <li><a href="/tools/find-replace">Find &amp; Replace</a> — Clean up source text before converting to a slug.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Normalize spaces before slug generation for clean output.</li>
+      <li><a href="/tools/word-counter">Word Counter</a> — Check your slug word count to ensure it's concise.</li>
     </ul>
   </section>
 </ToolLayout>

@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'lorem-ipsum')!;
 const faq = [
-  { question: 'What is Lorem Ipsum?', answer: 'Lorem Ipsum is standard placeholder text used since the 1500s in the printing and typesetting industry. It helps designers and developers fill layouts with realistic-looking text before the final content is available.' },
-  { question: 'Is the generated text real Latin?', answer: 'It is based on a section from "De Finibus Bonorum et Malorum" by Cicero (45 BC), but words have been altered and randomized over centuries, so it is not actual readable Latin.' },
-  { question: 'Can I generate custom amounts?', answer: 'Yes! You can choose between paragraphs, sentences, or words, and specify exactly how many you need.' },
+  { question: 'What is Lorem Ipsum?', answer: 'Lorem Ipsum is standard placeholder text used since the 1500s in the printing and typesetting industry. It helps designers and developers fill layouts with realistic-looking text before the final content is available. The passage originates from "De Finibus Bonorum et Malorum" by Cicero (45 BC).' },
+  { question: 'Is the generated text real Latin?', answer: 'Not quite. The original source is real Latin — a philosophical work by Cicero. However, the Lorem Ipsum version has been scrambled over centuries: letters were rearranged, words altered, and passages shuffled so that it is no longer grammatically meaningful Latin. It looks like Latin but reads as nonsense.' },
+  { question: 'Can I generate custom amounts?', answer: 'Yes! Choose between paragraphs, sentences, or words, and specify exactly how many you need from 1 to 100. You can also toggle whether the generated text starts with the classic "Lorem ipsum dolor sit amet..." opening.' },
+  { question: 'Why do designers use Lorem Ipsum instead of real text?', answer: 'Placeholder text serves a critical design purpose: it prevents viewers from focusing on the words rather than the layout. When a mockup contains readable text, clients and stakeholders react to the content ("I don\'t like that sentence") rather than the design ("How does the layout feel?"). Lorem Ipsum keeps the focus on typography, spacing, and visual hierarchy.' },
+  { question: 'What is the standard Lorem Ipsum opening passage?', answer: 'The classic opening is: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." This specific passage has been used as standard filler text since Richard McClintock traced it to Cicero in the 1990s.' },
+  { question: 'Are there alternatives to Lorem Ipsum?', answer: 'Yes. Some popular alternatives include: Hipster Ipsum (uses hipster slang), Bacon Ipsum (food-themed), Corporate Ipsum (uses business buzzwords), and Cupcake Ipsum. These can add humor to internal mockups. However, classic Lorem Ipsum remains the professional standard because it is universally recognized and has neutral, non-distracting letter distribution.' },
+  { question: 'Is generated Lorem Ipsum text unique each time?', answer: 'Yes — this generator uses a word bank of authentic Lorem Ipsum vocabulary and assembles sentences randomly each time you click Generate. The only fixed element is the opening "Lorem ipsum dolor sit amet" sentence when that option is enabled.' },
 ];
 ---
 
@@ -69,19 +73,42 @@ const faq = [
 
   <section class="tool-guide">
     <h2>What Is Lorem Ipsum?</h2>
-    <p>Lorem Ipsum is dummy placeholder text used in the design, publishing, and typesetting industries since the 1500s. It originates from a work by Cicero written in 45 BC called "De Finibus Bonorum et Malorum" (On the Ends of Good and Evil).</p>
-    <p>The standard Lorem Ipsum passage has been the industry's standard dummy text ever since a printer scrambled a type specimen book to create a type gallery. It survived five centuries of typesetting and the leap to digital publishing.</p>
+    <p>Lorem Ipsum is dummy placeholder text used in the design, publishing, and typesetting industries for over five centuries. It originates from a 45 BC philosophical work by the Roman statesman and orator Marcus Tullius Cicero, titled <em>"De Finibus Bonorum et Malorum"</em> (On the Ends of Good and Evil). The passage was discovered in the 1990s by Richard McClintock, a Latin scholar, who traced it to Cicero's Sections 1.10.32 and 1.10.33.</p>
 
-    <h3>Why Use Lorem Ipsum?</h3>
+    <p>The standard Lorem Ipsum passage used today has been scrambled over centuries. Letters were rearranged, words altered, and sections shuffled so that the text is no longer grammatically meaningful Latin — it <em>looks</em> like Latin but is not readable. This scrambling was intentional: it prevents the viewer's brain from processing the words as language, allowing them to focus on the visual design instead.</p>
+
+    <h3>Why Do Designers Use Lorem Ipsum?</h3>
+    <p>The core purpose of Lorem Ipsum is to serve as <strong>cognitively neutral filler text</strong>. When a design mockup contains readable text (like a draft headline or sample paragraph), stakeholders and clients unconsciously focus on the words rather than the layout. They start suggesting edits to the copy instead of evaluating the design.</p>
     <ul>
-      <li><strong>Realistic text appearance:</strong> Lorem Ipsum mimics the natural distribution of letters and words in English, creating realistic-looking text blocks for mockups.</li>
-      <li><strong>No distracting content:</strong> Unlike readable English placeholder text, Lorem Ipsum doesn't pull the viewer's attention away from the design being evaluated.</li>
-      <li><strong>Industry standard:</strong> Designers, developers, and editors instantly recognize Lorem Ipsum as placeholder text.</li>
-      <li><strong>Flexible length:</strong> You can generate exactly the amount of text you need — from a single sentence to multiple paragraphs.</li>
+      <li><strong>Realistic text appearance:</strong> Lorem Ipsum mimics the natural distribution of letters and word lengths in Latin-derived Western languages, creating text blocks that look realistic without being distracting.</li>
+      <li><strong>No content distractions:</strong> Unlike English placeholder text like "Placeholder text goes here", Lorem Ipsum does not invite content feedback during design review stages.</li>
+      <li><strong>Industry-standard recognition:</strong> Designers, developers, editors, and clients worldwide instantly recognize Lorem Ipsum as placeholder text — it signals "this content will be filled in later".</li>
+      <li><strong>Flexible length control:</strong> You can generate exactly the amount of text needed — from a single word to 100 paragraphs — to fill any layout realistically.</li>
     </ul>
 
-    <h3>When to Use This Generator</h3>
-    <p>Use Lorem Ipsum when building website mockups, creating design prototypes in Figma or Adobe XD, testing typography and layout in CSS, or filling content areas in CMS templates before real content is ready.</p>
+    <h3>When and How to Use This Generator</h3>
+    <p>Use Lorem Ipsum text when:</p>
+    <ul>
+      <li><strong>Building website mockups and wireframes</strong> in tools like Figma, Adobe XD, Sketch, or InVision. Fill text boxes with realistic paragraphs before the copywriter delivers final content.</li>
+      <li><strong>Testing CSS typography and layout</strong> — use multiple paragraphs to check how text wraps, how line-height renders, how much space a paragraph takes at different viewport widths.</li>
+      <li><strong>Populating CMS templates and themes</strong> — fill blog post templates, product page templates, and landing pages with placeholder content during development and QA testing.</li>
+      <li><strong>Email template design</strong> — use Lorem Ipsum in email body sections to test rendering across different email clients (Gmail, Outlook, Apple Mail) before adding real copy.</li>
+      <li><strong>Printing and publishing proofs</strong> — the original use case: fill page layouts with realistic text to show clients how a printed page will look before final copy is received.</li>
+      <li><strong>Database seeding and testing</strong> — developers use Lorem Ipsum text to seed test databases with realistic-looking text records for load testing and UI development.</li>
+    </ul>
+
+    <h3>Paragraph vs Sentence vs Word Generation</h3>
+    <p><strong>Paragraphs</strong> generate full blocks of text with 4–8 sentences each, separated by blank lines. Use this for testing multi-paragraph content areas like blog post bodies, About page sections, or product descriptions.</p>
+    <p><strong>Sentences</strong> generate individual sentences of varying length (5–17 words each). Use this for filling single-line text areas, captions, meta descriptions, or form placeholder text.</p>
+    <p><strong>Words</strong> generates individual Lorem Ipsum words. Use this for testing tag clouds, navigation labels, button text, or any context where you need short, word-length filler.</p>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/word-counter">Word & Character Counter</a> — Check how long your generated Lorem Ipsum text is before using it.</li>
+      <li><a href="/tools/find-replace">Find & Replace</a> — Replace Lorem Ipsum passages with real content after copywriting is complete.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Clean up extra whitespace that may appear when pasting generated text into editors.</li>
+      <li><a href="/tools/case-converter">Case Converter</a> — Convert Lorem Ipsum to title case or sentence case for different template contexts.</li>
+    </ul>
   </section>
 </ToolLayout>
 

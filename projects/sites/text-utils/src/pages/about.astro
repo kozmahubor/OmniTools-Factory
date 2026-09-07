@@ -58,7 +58,17 @@ import { SITE, TOOLS } from '../config';
             Many online text tools today are bloated with slow scripts, invasive sign-up walls, or security risks that upload your private text to third-party servers.
           </p>
           <p>
-            <strong>{SITE.name} was built with a different philosophy:</strong> zero-friction tools that run 100% locally inside your web browser. No accounts, no subscriptions, and complete privacy guaranteed.
+            <strong>{SITE.name} was built with a different philosophy:</strong> zero-friction tools that run 100% locally inside your web browser. No accounts, no subscriptions, and complete privacy guaranteed. Every calculation, conversion, and transformation happens on your device — your text never leaves your browser.
+          </p>
+        </section>
+
+        <section class="origin-section">
+          <h2>Who Built This</h2>
+          <p>
+            FixMyString started as a small personal project — born out of frustration with slow, ad-heavy, privacy-invasive text tools that required an account just to reverse a string or count words.
+          </p>
+          <p>
+            We believe that simple, useful tools should just <em>work</em> — instantly, privately, and for free. That belief turned a weekend script into a growing suite of tools that thousands of people use every day to write, code, and process text more efficiently.
           </p>
         </section>
 
@@ -66,13 +76,13 @@ import { SITE, TOOLS } from '../config';
           <div class="pillar-card">
             <div class="pillar-icon">⚡</div>
             <h3>Instant Speed</h3>
-            <p>Built with modern static web tech (Astro) so pages load in milliseconds globally.</p>
+            <p>Built with modern static web tech (Astro) so pages load in milliseconds globally via Cloudflare's CDN.</p>
           </div>
 
           <div class="pillar-card">
             <div class="pillar-icon">🔒</div>
             <h3>Privacy by Design</h3>
-            <p>All processing happens on your device. Your sensitive text never hits a backend server.</p>
+            <p>All processing happens on your device. Your sensitive text never hits a backend server — ever.</p>
           </div>
 
           <div class="pillar-card">
@@ -80,12 +90,38 @@ import { SITE, TOOLS } from '../config';
             <h3>Cross-Platform</h3>
             <p>Optimized for seamless performance on smartphones, tablets, and desktop computers.</p>
           </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon">🆓</div>
+            <h3>Always Free</h3>
+            <p>Every tool on this site is and always will be free. No accounts, no paywalls, no limitations.</p>
+          </div>
+        </section>
+
+        <section class="tools-section">
+          <h2>Our Tools</h2>
+          <p>FixMyString offers a growing collection of browser-based text utilities. Current tools include:</p>
+          <ul class="tools-list">
+            <li><a href="/tools/word-counter">Word & Character Counter</a> — Count words, characters, sentences, paragraphs, and estimate reading time.</li>
+            <li><a href="/tools/case-converter">Case Converter</a> — Convert text between uppercase, lowercase, title case, sentence case, camelCase, and more.</li>
+            <li><a href="/tools/text-reverser">Text Reverser</a> — Reverse characters, words, lines, or flip text upside down with Unicode.</li>
+            <li><a href="/tools/lorem-ipsum">Lorem Ipsum Generator</a> — Generate authentic Lorem Ipsum placeholder text by paragraph, sentence, or word.</li>
+            <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Remove duplicate lines from lists, exports, and datasets instantly.</li>
+            <li><a href="/tools/find-replace">Find & Replace</a> — Find and replace text or patterns with optional regex support.</li>
+            <li><a href="/tools/text-to-slug">Text to Slug</a> — Convert titles and headlines into clean, SEO-friendly URL slugs.</li>
+            <li><a href="/tools/sort-lines">Sort Lines</a> — Sort text lines alphabetically, numerically, by length, or randomly.</li>
+            <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Remove extra spaces, trailing whitespace, and normalize blank lines.</li>
+            <li><a href="/tools/string-encoder">String Encoder / Decoder</a> — Encode and decode URL, HTML entities, Base64, and Unicode escapes.</li>
+          </ul>
         </section>
 
         <section class="ads-disclosure">
           <h2>How We Stay Free</h2>
           <p>
-            {SITE.name} is supported by unobtrusive display advertising. This enables us to maintain, expand, and serve our tool suite free of charge to millions of users around the globe.
+            {SITE.name} is supported by unobtrusive display advertising provided by Google AdSense. This enables us to maintain, expand, and serve our tool suite free of charge to users around the world.
+          </p>
+          <p>
+            We do not sell user data, use tracking cookies beyond standard analytics, or display intrusive interstitial ads. Our ad placements are clearly labeled and non-deceptive, in compliance with Google's Publisher Policies.
           </p>
         </section>
       </div>
@@ -168,5 +204,42 @@ import { SITE, TOOLS } from '../config';
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
     line-height: var(--line-height-normal);
+  }
+
+  .origin-section h2,
+  .tools-section h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+  }
+
+  .origin-section p,
+  .tools-section p {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-4);
+  }
+
+  .tools-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .tools-list li {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .tools-list li a {
+    font-weight: var(--font-weight-semibold);
   }
 </style>

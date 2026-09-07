@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'whitespace-cleaner')!;
 const faq = [
-  { question: 'What does Whitespace Cleaner do?', answer: 'It cleans up messy text by removing duplicate spaces, converting tabs to spaces, trimming leading/trailing line whitespace, and removing empty lines.' },
-  { question: 'Can I collapse multiple blank lines?', answer: 'Yes! Toggle the "Collapse blank lines" option to turn multiple empty lines into single paragraph breaks.' },
-  { question: 'Is my data secure?', answer: 'Yes! Everything processes instantly inside your browser without sending any text to external servers.' }
+  { question: 'What does Whitespace Cleaner do?', answer: 'It cleans up messy text by removing or normalizing various types of whitespace: collapsing multiple spaces into one, converting tabs to spaces, trimming leading/trailing whitespace from each line, and removing or collapsing blank lines. All options are individually toggleable.' },
+  { question: 'Can I collapse multiple blank lines?', answer: 'Yes! The "Collapse multiple blank lines to one" option (enabled by default) reduces runs of two or more consecutive blank lines into a single blank line, preserving paragraph breaks without excess vertical space.' },
+  { question: 'Is my data secure?', answer: 'Yes — everything processes instantly inside your browser without sending any text to external servers. Your text never leaves your device.' },
+  { question: 'Why do I have invisible whitespace in my text?', answer: 'The most common sources are: copying from PDFs (which often add extra spaces at line breaks), copying from formatted emails or web pages (which may have HTML whitespace preserved), OCR-scanned text, and text exported from databases or spreadsheet tools that pad fields with spaces.' },
+  { question: 'What is a trailing space and why does it matter?', answer: 'A trailing space is an invisible space character at the end of a line. While harmless in most word processors, trailing spaces cause problems in: version control diffs (Git shows them as changes), Python code (where trailing whitespace in string comparisons causes bugs), database string fields (where " hello" != "hello"), and configuration files.' },
+  { question: 'What is the difference between tabs and spaces?', answer: 'Tabs (\t) and spaces are both whitespace characters used for indentation and alignment. Tabs are a single character but display as variable-width depending on your editor settings. Spaces are fixed-width. Most modern style guides (Python PEP 8, JavaScript Prettier) prefer spaces. Converting tabs to spaces ensures your text looks consistent across all editors and platforms.' },
+  { question: 'What does non-breaking space mean?', answer: 'A non-breaking space (Unicode U+00A0) looks like a regular space but prevents line breaking at that position. It is commonly inserted by word processors, PDFs, and some websites. Non-breaking spaces can cause unexpected behavior in code and data processing, since they are not matched by normal space character comparisons or regex \\s patterns in some implementations.' },
 ];
 ---
 
@@ -63,20 +67,47 @@ const faq = [
 
   <section class="tool-guide">
     <h2>What Is Whitespace and Why Clean It?</h2>
-    <p>Whitespace refers to invisible characters in text — spaces, tabs, line breaks, and other non-printing characters. While whitespace is essential for readability, extra or inconsistent whitespace causes problems in data processing, code, and published content.</p>
+    <p>Whitespace refers to invisible characters in text — spaces, tabs, line breaks, and other non-printing characters. While whitespace is essential for readability, extra or inconsistent whitespace causes real problems in data processing, code, version control, publishing, and database systems.</p>
 
-    <h3>Common Whitespace Problems</h3>
-    <p><strong>Trailing spaces:</strong> Invisible spaces at the end of lines. These are the most common whitespace issue, often introduced by copy-pasting from formatted documents. They can cause string comparison failures in code and messy diffs in version control.</p>
-    <p><strong>Multiple consecutive spaces:</strong> Two or more spaces between words where only one is needed. Common when copying from PDFs or formatted emails.</p>
-    <p><strong>Mixed tabs and spaces:</strong> Inconsistent use of tabs and spaces for indentation. This is a frequent source of formatting issues in code and can cause errors in languages like Python where indentation is significant.</p>
-    <p><strong>Extra blank lines:</strong> Multiple consecutive blank lines between paragraphs. While one blank line is standard for separating paragraphs, two or more looks unprofessional.</p>
+    <p>This tool handles multiple types of whitespace problems at once. Choose which cleaning operations to apply using the checkboxes, then copy the cleaned result to your clipboard.</p>
+
+    <h3>Types of Whitespace Problems</h3>
+    <p><strong>Trailing spaces</strong> are invisible space characters at the end of lines. They are the most common whitespace issue, typically introduced by copying from PDFs, formatted documents, or email clients. Trailing spaces cause visible changes in Git diffs (git will highlight them as modifications), string comparison failures in code (<code>" hello"</code> ≠ <code>"hello"</code>), and can trigger linter warnings in most programming languages.</p>
+
+    <p><strong>Double (or multiple) consecutive spaces</strong> appear between words when only one space is needed. This commonly happens when copying from PDFs (which add spaces at hyphenation points), from formatted documents, or when manually editing text and accidentally pressing space twice. In HTML, multiple spaces collapse to one, but in plain text editors, CSVs, and code, they cause alignment issues.</p>
+
+    <p><strong>Mixed tabs and spaces</strong> are a frequent source of bugs in code. Python, in particular, raises <code>IndentationError</code> or <code>TabError</code> when tabs and spaces are mixed in the same block. Even in non-Python code, mixed indentation causes text to render incorrectly across different editors and tools. Converting all tabs to spaces ensures consistent rendering everywhere.</p>
+
+    <p><strong>Extra blank lines</strong> (multiple consecutive empty lines) are common in text copied from PDFs, presentations, and emails. Professional documents use a single blank line to separate paragraphs. The "Collapse blank lines" option reduces all runs of multiple blank lines to a single blank line, while "Remove ALL blank lines" eliminates them entirely.</p>
+
+    <p><strong>Non-breaking spaces</strong> (Unicode U+00A0) look like regular spaces but are a different character. They are commonly inserted by word processors (Microsoft Word, LibreOffice), PDFs, and some websites to prevent line breaks at specific positions. Non-breaking spaces cause subtle bugs because they are not matched by simple space comparisons or the standard <code>\s</code> regex pattern in some implementations.</p>
 
     <h3>When to Use This Tool</h3>
     <ul>
-      <li><strong>After copy-pasting:</strong> Clean up text copied from PDFs, web pages, or formatted documents.</li>
-      <li><strong>Before publishing:</strong> Ensure your content has consistent, clean formatting.</li>
-      <li><strong>Code cleanup:</strong> Remove trailing whitespace and normalize indentation before committing code.</li>
-      <li><strong>Data preparation:</strong> Clean whitespace from CSV files, database exports, or user-submitted content.</li>
+      <li><strong>After copy-pasting from PDFs:</strong> PDFs frequently introduce extra spaces, broken line endings, and mixed whitespace. This tool cleans it all up in one pass.</li>
+      <li><strong>Before committing code:</strong> Remove trailing whitespace that would appear as spurious changes in your Git diff, triggering noise in code reviews.</li>
+      <li><strong>Before importing data into databases:</strong> Trailing spaces in CSV files or exported text can cause duplicate records (" john@example.com" and "john@example.com" are different strings to a database).</li>
+      <li><strong>Before publishing content:</strong> Ensure blog posts, articles, and documentation have consistent paragraph spacing without extra blank lines.</li>
+      <li><strong>After OCR scanning:</strong> Optical character recognition often produces text with irregular spacing. Clean it before editing.</li>
+      <li><strong>Before running deduplication:</strong> Normalize whitespace before using the Duplicate Line Remover to ensure lines that differ only by trailing spaces are correctly identified as duplicates.</li>
+      <li><strong>Before word counting:</strong> Extra spaces can inflate word counts. Clean whitespace first for an accurate count with the Word Counter tool.</li>
+    </ul>
+
+    <h3>Options Reference</h3>
+    <ul>
+      <li><strong>Remove extra spaces (double → single):</strong> Collapses 2+ consecutive spaces into one space anywhere in a line.</li>
+      <li><strong>Trim trailing/leading spaces on each line:</strong> Removes all spaces and tabs from the beginning and end of each line.</li>
+      <li><strong>Convert tabs to 4 spaces:</strong> Replaces every tab character with 4 space characters for consistent indentation.</li>
+      <li><strong>Remove ALL blank lines:</strong> Deletes every empty line, creating a wall of continuous text.</li>
+      <li><strong>Collapse multiple blank lines to one:</strong> Reduces 2+ consecutive blank lines to exactly one blank line, preserving paragraph structure.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/word-counter">Word & Character Counter</a> — Count words accurately after cleaning whitespace.</li>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Remove duplicate lines after whitespace normalization.</li>
+      <li><a href="/tools/find-replace">Find & Replace</a> — For more complex whitespace manipulation using regex patterns.</li>
+      <li><a href="/tools/sort-lines">Sort Lines</a> — Sort your cleaned lines alphabetically or numerically.</li>
     </ul>
   </section>
 </ToolLayout>

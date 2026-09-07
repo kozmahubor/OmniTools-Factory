@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'duplicate-remover')!;
 const faq = [
-  { question: 'How does Duplicate Line Remover work?', answer: 'It scans your text line by line and keeps only the first occurrence of each unique line, filtering out all duplicates.' },
-  { question: 'Is case sensitivity supported?', answer: 'Yes! You can toggle case sensitivity to treat "Apple" and "apple" as duplicates or as distinct lines.' },
-  { question: 'Can I trim leading/trailing whitespace?', answer: 'Yes, enabling the "Trim lines" option ensures lines with invisible extra spaces are matched correctly.' }
+  { question: 'How does Duplicate Line Remover work?', answer: 'It scans your text line by line and keeps only the first occurrence of each unique line, filtering out all subsequent duplicates. The tool uses a JavaScript Set data structure to track seen lines, which is extremely efficient even for very large inputs.' },
+  { question: 'Is case sensitivity supported?', answer: 'Yes! Toggle "Case sensitive" to control whether "Apple" and "apple" are treated as duplicates (case-insensitive, the default) or as distinct lines (case-sensitive). Case-insensitive matching is useful for email lists, tag lists, and keyword lists where capitalization varies.' },
+  { question: 'Can I trim leading/trailing whitespace?', answer: 'Yes. The "Trim spaces before comparing" option removes invisible leading and trailing whitespace from each line before comparing. This ensures that lines like " hello" and "hello " are correctly identified as duplicates, even though they differ by whitespace.' },
+  { question: 'What happens to empty lines?', answer: 'By default, empty lines are removed along with blank duplicates. Enable "Keep empty lines" to preserve blank lines in the output. This is useful when the empty lines in your data carry structural meaning, such as paragraph breaks between list sections.' },
+  { question: 'How large a file can I use this tool with?', answer: 'This tool runs entirely in your browser and can handle hundreds of thousands of lines efficiently. Performance depends on your device, but typical use cases (email lists, keyword lists, log files under 10MB) will process instantly.' },
+  { question: 'Does removing duplicates change the order of lines?', answer: 'No — the tool preserves the original order of lines. The first occurrence of each unique line is kept in its original position. If you want the output sorted alphabetically, use the Sort Lines tool after deduplication.' },
+  { question: 'Can I use this to clean CSV data?', answer: 'Yes, with some care. If each row is on its own line and you want to remove exact row duplicates, this tool works perfectly. However, for complex CSV files with embedded newlines or quoted commas, use a dedicated CSV editor. For simple comma-separated lists where each item is on its own line, this tool is ideal.' },
 ];
 ---
 
@@ -72,19 +76,34 @@ const faq = [
 
   <section class="tool-guide">
     <h2>How to Remove Duplicate Lines</h2>
-    <p>Paste your text into the input area and the tool automatically identifies and removes duplicate lines, keeping only unique entries. You can choose whether the comparison is case-sensitive and whether to trim whitespace before comparing.</p>
+    <p>Paste your text into the input area above. The tool automatically scans every line and removes all duplicate entries, keeping only the first occurrence of each unique line. Results update in real time — no button click needed. When finished, click "Copy Unique Lines" to copy the cleaned result to your clipboard.</p>
 
-    <h3>When You Need This Tool</h3>
+    <h3>Practical Use Cases</h3>
     <ul>
-      <li><strong>Cleaning email lists:</strong> Remove duplicate email addresses from a list before importing into your email marketing platform.</li>
-      <li><strong>Data processing:</strong> Deduplicate exported CSV or database records that may contain repeated entries.</li>
-      <li><strong>Log analysis:</strong> Remove repeated log entries to focus on unique events and errors.</li>
-      <li><strong>Content editing:</strong> Clean up lists of keywords, tags, or categories that have accumulated duplicates over time.</li>
+      <li><strong>Email list deduplication:</strong> Remove duplicate email addresses from subscriber exports, contact exports, or merged lists before importing into Mailchimp, ConvertKit, or any email marketing platform. Duplicate email addresses can trigger spam flags and inflate send costs.</li>
+      <li><strong>Keyword list cleaning:</strong> SEO keyword research tools often export lists with repeated terms. Clean your keyword list with this tool before importing into spreadsheets or rank tracking tools.</li>
+      <li><strong>CSV and database record cleanup:</strong> When merging data from multiple sources (exports from CRMs, spreadsheets, APIs), duplicate rows are common. Paste the raw export line by line and remove exact row duplicates instantly.</li>
+      <li><strong>Log file analysis:</strong> Application and server logs often repeat the same error messages dozens or hundreds of times. Removing duplicate log lines lets you see the <em>variety</em> of events that occurred, not just the volume.</li>
+      <li><strong>Tag and category deduplication:</strong> Content lists, tag databases, and taxonomy files often accumulate duplicates over time. Clean them up before syncing to production.</li>
+      <li><strong>Code review:</strong> Check import lists, configuration entries, or dependency lists for accidental duplicates that may cause runtime errors or increase bundle size.</li>
+      <li><strong>Inventory and product lists:</strong> Remove duplicate SKUs, product names, or IDs from exported product catalogs before processing.</li>
     </ul>
 
-    <h3>Options Explained</h3>
-    <p><strong>Case-sensitive</strong> means "Hello" and "hello" are treated as different lines. Turn this off if you want case-insensitive matching — useful for cleaning lists where capitalization is inconsistent.</p>
-    <p><strong>Trim whitespace</strong> removes leading and trailing spaces from each line before comparison. This prevents lines that differ only by invisible whitespace from being treated as unique.</p>
+    <h3>Understanding the Options</h3>
+    <p><strong>Case sensitive</strong> means "Hello", "HELLO", and "hello" are treated as three distinct, unique lines. Turn this <em>off</em> (the default) for case-insensitive matching — useful for email addresses (which are technically case-insensitive), tags, keywords, and other lists where capitalization is inconsistent.</p>
+    <p><strong>Trim spaces before comparing</strong> removes invisible leading and trailing whitespace from each line before comparing it. This ensures that " hello" and "hello " are correctly identified as duplicates rather than being treated as different lines. This option is enabled by default and is almost always what you want.</p>
+    <p><strong>Keep empty lines</strong> preserves blank lines in the output. By default, empty lines are removed, since they are almost always unintentional artifacts of copy-pasting. Enable this if empty lines in your data have structural meaning (e.g., paragraph separators in a text document).</p>
+
+    <h3>How It Works Technically</h3>
+    <p>The tool splits your input on newline characters (<code>\n</code>), then iterates through each line. A JavaScript <code>Set</code> data structure tracks which normalized lines have already been seen. For each line, if it is not in the set, it is kept in the output and added to the set. If it is already in the set, it is discarded. This gives O(n) performance — linear time relative to the number of lines, even for very large inputs.</p>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/sort-lines">Sort Lines</a> — Sort your deduplicated lines alphabetically or in reverse order.</li>
+      <li><a href="/tools/word-counter">Word & Character Counter</a> — Count lines before and after deduplication.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Clean extra spaces from your text before deduplication for best results.</li>
+      <li><a href="/tools/find-replace">Find & Replace</a> — Normalize text (e.g., standardize capitalization) before removing duplicates.</li>
+    </ul>
   </section>
 </ToolLayout>
 

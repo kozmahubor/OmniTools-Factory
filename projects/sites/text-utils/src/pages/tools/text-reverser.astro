@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'text-reverser')!;
 const faq = [
-  { question: 'How does text reversing work?', answer: 'The text reverser flips your input text based on your selection — by individual characters, by words, or by entire lines.' },
-  { question: 'Is my data private?', answer: 'Yes! All reversal logic happens entirely in your web browser. Nothing is sent to any server.' },
-  { question: 'What is Flip Upside Down mode?', answer: 'Upside down mode uses Unicode character mappings to flip your letters upside down, producing text like ʇxǝʇ pǝddılɟ.' }
+  { question: 'How does text reversing work?', answer: 'The text reverser flips your input text using JavaScript in your browser. Choose between reversing individual characters, reversing word order on each line, reversing the order of lines, or converting text to upside-down Unicode characters. All processing is instant and entirely local.' },
+  { question: 'Is my data private?', answer: 'Yes — all reversal logic runs entirely in your web browser. Nothing is sent to any server. This is especially useful when reversing sensitive strings like passwords, API keys, or private notes for encoding purposes.' },
+  { question: 'What is Flip Upside Down mode?', answer: 'Upside down mode maps each standard Latin character to a visually similar Unicode character that appears flipped. For example, "hello" becomes "oʃʃǝH". These are real Unicode codepoints — they can be pasted into social media, usernames, and messages on any platform that supports Unicode.' },
+  { question: 'Can reversed text be reversed back?', answer: 'Yes — for character and word reversal, pasting the reversed text and reversing again gives you back the original. Upside-down Unicode reversal is also reversible. Line order reversal is also fully reversible.' },
+  { question: 'What is a palindrome and how can this tool help?', answer: 'A palindrome is a word, phrase, or number that reads the same forwards and backwards — like "racecar" or "Was it a car or a cat I saw?". Use Reverse Characters mode and compare the result to your original to instantly check for palindromes.' },
+  { question: 'Why would I reverse lines in text?', answer: 'Reversing line order is useful for many practical tasks: reversing a chronological log file to show newest entries first, flipping a sorted list from Z-to-A, reversing a numbered list before reformatting, or simply reordering lines in a CSV without a spreadsheet.' },
+  { question: 'Does the reverser work with multiple languages?', answer: 'Yes — character reversal works with any Unicode text including accented characters (é, ü, ñ), CJK characters (Chinese, Japanese, Korean), Arabic, Hebrew, and Emoji. The upside-down mode has mappings for standard Latin letters and common punctuation.' },
 ];
 ---
 
@@ -51,21 +55,34 @@ const faq = [
   </div>
 
   <section class="tool-guide">
-    <h2>About Text Reversing</h2>
-    <p>Text reversing is a simple but surprisingly useful operation. Whether you need to reverse characters for a coding challenge, flip word order for a creative project, or generate upside-down text for social media, this tool handles it instantly.</p>
+    <h2>About the Text Reverser</h2>
+    <p>Text reversing is a deceptively simple operation with a wide range of practical applications in programming, data processing, creative writing, and social media. This tool offers four distinct reversal modes, all running instantly in your browser with no data ever sent to a server.</p>
 
-    <h3>Available Modes</h3>
-    <p><strong>Reverse Characters</strong> flips every character in the text. "Hello World" becomes "dlroW olleH". This is the most common form of text reversal, often used in programming challenges and palindrome detection.</p>
-    <p><strong>Reverse Words</strong> keeps each word intact but reverses their order within each line. "The quick brown fox" becomes "fox brown quick The". Useful for experimenting with sentence structure.</p>
-    <p><strong>Reverse Lines</strong> reverses the order of lines in multi-line text. The last line becomes the first, and vice versa. Helpful for reversing lists, log files, or CSV data.</p>
-    <p><strong>Upside Down</strong> uses special Unicode characters to create text that appears flipped upside down: "Hello" becomes "oʃʃǝH". This is popular for social media posts, usernames, and creative messaging.</p>
+    <h3>Reversal Modes Explained</h3>
+    <p><strong>Reverse Characters</strong> flips every character in the text. "Hello World" becomes "dlroW olleH". This is the most fundamental form of string reversal. In computer science, this operation has O(n) time complexity and is a standard exercise in every programming language. It is used in palindrome detection algorithms, data obfuscation, and encoding schemes.</p>
 
-    <h3>Common Use Cases</h3>
+    <p><strong>Reverse Words</strong> keeps each word intact but reverses their order within each line. "The quick brown fox" becomes "fox brown quick The". This mode processes each line independently, so multi-line text will have each line's word order reversed. This is useful for testing Natural Language Processing (NLP) tokenizers, creating word-order puzzles, or experimenting with sentence structure for creative writing.</p>
+
+    <p><strong>Reverse Lines</strong> reverses the order of lines in multi-line text — the last line becomes the first and vice versa, while each line itself is left unchanged. This is practically useful for: reversing chronological log files to show the most recent events first, flipping a list from ascending to descending order without a spreadsheet, reordering CSV rows, or inverting a numbered list before renumbering.</p>
+
+    <p><strong>Upside Down (Unicode Flip)</strong> maps each Latin character to a visually similar Unicode character that appears rotated 180°. "Hello" becomes "ollǝH" when also reversed. These are real, pasteable Unicode codepoints supported by all modern operating systems, social media platforms, messaging apps, and email clients. Common uses include social media usernames, creative bio text, puzzle messages, and casual jokes.</p>
+
+    <h3>Practical Use Cases</h3>
     <ul>
-      <li><strong>Palindrome checking:</strong> Reverse text and compare it to the original to check if a word or phrase is a palindrome.</li>
-      <li><strong>Programming practice:</strong> String reversal is a classic coding interview question and a fundamental algorithm exercise.</li>
-      <li><strong>Data manipulation:</strong> Reverse line order in log files or datasets for chronological analysis.</li>
-      <li><strong>Creative writing:</strong> Generate mirror text or upside-down text for social media, art projects, or puzzles.</li>
+      <li><strong>Palindrome checking:</strong> A palindrome reads the same forwards and backwards ("racecar", "level", "Was it a car or a cat I saw?"). Reverse the text and compare to the original to instantly test for palindromes. This is a classic coding interview exercise.</li>
+      <li><strong>Coding interviews and algorithm practice:</strong> String reversal is one of the most common coding interview questions in languages like Python, JavaScript, Java, and C++. Use this tool to verify your algorithm's output.</li>
+      <li><strong>Log file analysis:</strong> Server logs and application logs are typically written oldest-first. Reversing line order gives you the most recent events at the top, which is much faster for debugging.</li>
+      <li><strong>Creative text for social media:</strong> Upside-down text is popular on Twitter/X, Instagram bios, Reddit usernames, and Discord profiles. Reversed character text creates a mirror-writing effect.</li>
+      <li><strong>Data obfuscation:</strong> Simple character reversal is occasionally used as a very basic obfuscation technique for storing text strings that should not be immediately human-readable (note: this is not encryption and should not be used for security-sensitive data).</li>
+      <li><strong>Testing text rendering:</strong> Developers use reversed or scrambled text to test how an application handles right-to-left reading order, unusual Unicode characters, or text overflow in UI components.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/case-converter">Case Converter</a> — Change the case of text before or after reversing it.</li>
+      <li><a href="/tools/word-counter">Word & Character Counter</a> — Check the length of your reversed text.</li>
+      <li><a href="/tools/find-replace">Find & Replace</a> — Edit specific parts of your text before reversing.</li>
+      <li><a href="/tools/string-encoder">String Encoder/Decoder</a> — Encode your text in Base64 or URL-encoded format after reversing.</li>
     </ul>
   </section>
 </ToolLayout>

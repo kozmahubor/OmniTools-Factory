@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'find-replace')!;
 const faq = [
-  { question: 'How does Find and Replace work?', answer: 'Enter the text or pattern you want to search for, type the replacement text, and the tool instantly replaces all matching occurrences.' },
-  { question: 'Does it support Regular Expressions (Regex)?', answer: 'Yes! Check the "Use Regex" option to perform regex replacements, such as matching numbers, email patterns, or custom regex rules.' },
-  { question: 'Is my data secure?', answer: 'All replacements run locally in JavaScript in your web browser. No data is sent to external servers.' }
+  { question: 'How does Find and Replace work?', answer: 'Enter the text you want to search for in the "Find" field, type the replacement in the "Replace with" field, and the tool instantly replaces all matching occurrences in your source text. Results update in real time as you type.' },
+  { question: 'Does it support Regular Expressions (Regex)?', answer: 'Yes! Check the "Use Regular Expressions" option to use regex patterns. For example: \\d+ matches any sequence of digits, \\b\\w+@\\w+\\.\\w+\\b matches email-like patterns, ^\\s+ matches leading whitespace at the start of each line, and (\\w+)\\s+\\1 matches repeated words. Regex follows JavaScript RegExp syntax.' },
+  { question: 'Is my data secure?', answer: 'Yes — all replacements run locally in JavaScript in your web browser. No text is sent to any server. This makes the tool safe to use with sensitive documents, source code, passwords, or confidential data.' },
+  { question: 'What does case sensitive mean?', answer: 'When case sensitive is enabled, "Hello" and "hello" are different strings and only the exact case match will be replaced. When disabled (the default), the search is case-insensitive: searching for "hello" will match "Hello", "HELLO", and "hello".' },
+  { question: 'Can I use this to replace text with nothing (delete)?', answer: 'Yes. Leave the "Replace with" field empty to delete all occurrences of the search term. This is useful for stripping out unwanted characters, removing HTML tags with regex mode, or deleting specific keywords from a document.' },
+  { question: 'How do I replace a newline or tab character?', answer: 'In Regex mode, use \\n to match newline characters and \\t to match tab characters. For example, to join all lines into one, set Find to \\n and Replace with a space. To remove all tabs, set Find to \\t and leave Replace empty.' },
+  { question: 'What are some practical regex replacement examples?', answer: 'Remove all numbers: Find = \\d+, Replace = empty. Remove HTML tags: Find = <[^>]+>, Replace = empty. Replace multiple spaces with one: Find = \\s+, Replace = " ". Add "https://" prefix to URLs: Find = (www\\..+), Replace = https://$1. Extract first word of each line: more complex — see our regex guide blog post.' },
 ];
 ---
 
@@ -72,19 +76,50 @@ const faq = [
   </div>
 
   <section class="tool-guide">
-    <h2>How to Use Find & Replace</h2>
-    <p>Enter your text in the main area, type what you want to find in the "Find" field, type the replacement in the "Replace with" field, and click Replace All. The tool highlights all matches and performs the replacement instantly.</p>
+    <h2>How to Use Find &amp; Replace</h2>
+    <p>Enter your source text in the main text area. Type the term you want to search for in the "Find" field and the replacement in the "Replace with" field. The tool replaces all occurrences instantly and shows a count of replacements made. Click "Copy Result" to copy the modified text.</p>
 
-    <h3>Advanced Options</h3>
-    <p><strong>Case Sensitive:</strong> When enabled, "Hello" and "hello" are treated as different strings. When disabled, both will match the search term "hello".</p>
-    <p><strong>Regex Mode:</strong> Enables regular expression patterns for powerful, pattern-based searching. For example, <code>\d+</code> matches any sequence of digits, <code>\b\w+@\w+\.\w+\b</code> matches email addresses, and <code>^</code> matches the start of each line.</p>
+    <h3>Plain Text vs Regex Mode</h3>
+    <p>By default, the tool runs in <strong>plain text mode</strong>: every character in your search term is matched literally. Special characters like <code>.</code>, <code>*</code>, <code>+</code>, <code>(</code>, <code>)</code>, and <code>[</code> are all treated as regular characters.</p>
+    <p>Enable <strong>Regex Mode</strong> to unlock pattern-based matching using JavaScript regular expression syntax. Regex allows you to match not just specific text, but patterns like "any digit", "any whitespace", "start of line", or "word boundary". This is one of the most powerful text manipulation techniques available.</p>
 
-    <h3>Common Use Cases</h3>
+    <h3>Useful Regex Patterns</h3>
     <ul>
-      <li><strong>Batch renaming:</strong> Replace all occurrences of an old product name with a new one across a document.</li>
-      <li><strong>Data formatting:</strong> Convert date formats, phone number formats, or currency symbols throughout your text.</li>
-      <li><strong>Code refactoring:</strong> Rename variables or functions across code snippets without an IDE.</li>
-      <li><strong>Content cleanup:</strong> Remove unwanted characters, fix consistent typos, or standardize terminology across a document.</li>
+      <li><code>\d+</code> — Matches one or more consecutive digits (0-9). Use to find or remove all numbers in a document.</li>
+      <li><code>\s+</code> — Matches one or more whitespace characters (spaces, tabs, newlines). Replace with a single space to collapse multiple spaces.</li>
+      <li><code>\n</code> — Matches a newline character. Replace with a space or comma to join lines into a single line.</li>
+      <li><code>\t</code> — Matches a tab character. Replace with spaces or commas to convert tab-separated values.</li>
+      <li><code>^</code> — Matches the start of each line (in multiline mode). Use to add a prefix to every line.</li>
+      <li><code>$</code> — Matches the end of each line. Use to add a suffix to every line.</li>
+      <li><code>[aeiou]</code> — Matches any vowel. Replace with empty string to remove all vowels.</li>
+      <li><code>&lt;[^&gt;]+&gt;</code> — Matches HTML tags. Replace with empty string to strip HTML from text.</li>
+      <li><code>\b(\w+)\s+\1\b</code> — Matches repeated consecutive words (like "the the"). Replace with <code>$1</code> to fix the duplicate.</li>
+    </ul>
+
+    <h3>Practical Use Cases</h3>
+    <ul>
+      <li><strong>Brand/product name changes:</strong> After a rebranding, replace every occurrence of an old product name across a large document in one step. Enable case-insensitive mode to catch all capitalization variants.</li>
+      <li><strong>Data format conversion:</strong> Convert date formats (e.g., MM/DD/YYYY to YYYY-MM-DD), phone number formats, or currency symbols throughout structured data exports using regex replacement.</li>
+      <li><strong>Code refactoring outside an IDE:</strong> Rename variables, function names, or CSS class names across a code snippet. This is useful when you want to clean up code before pasting into a PR description or documentation.</li>
+      <li><strong>Content standardization:</strong> Fix consistent spelling variants (“colour” → “color”), standardize terminology, or replace informal contractions (“don’t” → “do not”) for formal documents.</li>
+      <li><strong>Removing unwanted content:</strong> Strip all HTML tags, remove all numbers, delete all punctuation, or remove a specific word from a document by leaving the Replace field empty.</li>
+      <li><strong>CSV and data manipulation:</strong> Change delimiters (comma to tab, tab to pipe), add quotation marks around values, or clean up improperly formatted exported data.</li>
+      <li><strong>Markdown cleanup:</strong> Remove Markdown formatting symbols, convert Markdown headings to plain text, or reformat code fences for a different documentation system.</li>
+    </ul>
+
+    <h3>Tips for Better Replacements</h3>
+    <ul>
+      <li>In regex mode, special characters like <code>.</code>, <code>*</code>, <code>+</code>, <code>(</code>, <code>)</code>, <code>[</code>, <code>]</code>, <code>{</code>, <code>}</code>, <code>^</code>, <code>$</code>, <code>|</code>, and <code>\</code> must be escaped with a backslash (<code>\.</code>, <code>\*</code>, etc.) if you want to match them literally.</li>
+      <li>Use capture groups (<code>(pattern)</code>) and backreferences (<code>$1</code>, <code>$2</code>) in your replacement string to rearrange matched content. For example, to swap two words: Find = <code>(\w+) (\w+)</code>, Replace = <code>$2 $1</code>.</li>
+      <li>Test your regex on a small sample first before applying to large documents to ensure it matches what you expect.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/case-converter">Case Converter</a> — Change text case after your find &amp; replace operations.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Remove extra spaces and normalize whitespace after replacement.</li>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Remove duplicate lines that may appear after batch replacements.</li>
+      <li><a href="/tools/word-counter">Word Counter</a> — Count words before and after to verify your replacements worked as expected.</li>
     </ul>
   </section>
 </ToolLayout>

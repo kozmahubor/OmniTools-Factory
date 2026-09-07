@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'string-encoder')!;
 const faq = [
-  { question: 'What encoders/decoders are supported?', answer: 'We support URL Encoding, HTML Entities Encoding, Base64 Encoding/Decoding, and Unicode Escape/Unescape.' },
-  { question: 'Why encode strings?', answer: 'Encoding converts special characters into safe representations for web URLs, HTML markup, database storage, or API payloads.' },
-  { question: 'Is Base64 decoding secure?', answer: 'Yes, everything happens strictly within your browser. No encoded string is ever transmitted across the internet.' }
+  { question: 'What encoders/decoders are supported?', answer: 'We support URL Encoding (percent encoding), HTML Entities Encoding, Base64 Encoding and Decoding, and Unicode Escape/Unescape. All operations work both ways — you can encode and decode with each format.' },
+  { question: 'Why encode strings?', answer: 'Encoding converts special characters into safe representations for specific contexts. URL encoding makes query parameters safe in web URLs. HTML encoding prevents XSS attacks by making < and > non-executable. Base64 makes binary data safe to embed in text formats like JSON, CSS, or email. Unicode escaping makes non-ASCII characters safe in ASCII-only source code.' },
+  { question: 'Is Base64 a form of encryption?', answer: 'No — Base64 is encoding, not encryption. It can be decoded by anyone instantly without a key. Never use Base64 to protect sensitive data. It is designed to safely transport binary or non-ASCII data through text-based channels (like JSON, XML, or email), not to conceal data.' },
+  { question: 'What is the difference between URL encoding and HTML encoding?', answer: 'URL encoding (percent encoding) converts characters that are unsafe in URLs into %XX format, where XX is the hexadecimal Unicode code point. HTML entity encoding converts characters that have special meaning in HTML (<, >, &, ", \') into named or numeric HTML entities (&lt;, &gt;, &amp;). They are completely different formats for completely different contexts.' },
+  { question: 'When should I use Unicode escape sequences?', answer: 'Unicode escape sequences (\u00E9 for é) are used in programming contexts where you need to represent a non-ASCII character in source code that only supports ASCII. This is common in older JSON files, Java .properties files, JavaScript ES5 string literals, and email headers. Modern systems usually support UTF-8 directly, so Unicode escapes are less commonly needed today.' },
+  { question: 'Is my data secure when using this tool?', answer: 'Yes — everything happens strictly within your browser using JavaScript. No encoded or decoded string is ever transmitted to any server. This makes the tool safe to use with sensitive strings like API keys, tokens, database connection strings, and personal data.' },
+  { question: 'What does percent encoding mean in URLs?', answer: 'Percent encoding (also called URL encoding) is the standard defined in RFC 3986 for encoding reserved and unsafe characters in URLs. Each unsafe character is replaced by a "%" followed by two hexadecimal digits. For example: space becomes %20, forward slash becomes %2F, plus sign becomes %2B, and the at symbol becomes %40.' },
 ];
 ---
 
@@ -56,20 +60,44 @@ const faq = [
 
   <section class="tool-guide">
     <h2>Understanding String Encoding</h2>
-    <p>String encoding converts text characters into a different format for safe storage, transmission, or display. Different encoding systems exist because different contexts have different rules about which characters are "safe."</p>
+    <p>String encoding converts text characters into a different format for safe storage, transmission, or display. Different encoding systems exist because different contexts have different rules about which characters are "safe" and which have special meaning. This tool supports four essential encoding formats used in web development, programming, and data processing.</p>
 
-    <h3>Encoding Types Explained</h3>
-    <p><strong>HTML Entities:</strong> Converts special characters into HTML-safe codes. For example, <code>&lt;</code> becomes <code>&amp;lt;</code> and <code>&amp;</code> becomes <code>&amp;amp;</code>. Essential for preventing XSS (cross-site scripting) attacks and displaying code in web pages.</p>
-    <p><strong>URL Encoding (Percent Encoding):</strong> Converts characters that aren't allowed in URLs into <code>%XX</code> format. Spaces become <code>%20</code>, special characters like <code>?</code> and <code>&amp;</code> get encoded so they aren't misinterpreted as URL syntax.</p>
-    <p><strong>Base64:</strong> Converts any data (text or binary) into a string of 64 safe ASCII characters. Used for embedding images in CSS, JWT tokens, email attachments, and API data transfer.</p>
-    <p><strong>Unicode Escapes:</strong> Represents characters using their Unicode code point in <code>\uXXXX</code> format. Used in JavaScript, JSON, and other programming contexts where non-ASCII characters need a safe text representation.</p>
+    <h3>URL Encoding (Percent Encoding)</h3>
+    <p>URL encoding, formally defined in <a href="https://datatracker.ietf.org/doc/html/rfc3986" rel="noopener noreferrer">RFC 3986</a>, converts characters that are unsafe or reserved in URLs into a <code>%</code> followed by two hexadecimal digits representing the character's byte value.</p>
+    <p>Common conversions: space → <code>%20</code>, <code>&amp;</code> → <code>%26</code>, <code>=</code> → <code>%3D</code>, <code>?</code> → <code>%3F</code>, <code>/</code> → <code>%2F</code>, <code>+</code> → <code>%2B</code>, <code>@</code> → <code>%40</code>.</p>
+    <p>Use URL encoding when: building dynamic URLs with query parameters, handling form submissions, working with REST APIs that pass data in URL parameters, or generating redirect URLs.</p>
 
-    <h3>When to Use Each</h3>
+    <h3>HTML Entity Encoding</h3>
+    <p>HTML entity encoding converts characters that have special meaning in HTML markup into safe named or numeric entity references. This is a critical security technique for preventing Cross-Site Scripting (XSS) attacks.</p>
+    <p>Core conversions: <code>&lt;</code> → <code>&amp;lt;</code>, <code>&gt;</code> → <code>&amp;gt;</code>, <code>&amp;</code> → <code>&amp;amp;</code>, <code>"</code> → <code>&amp;quot;</code>, <code>'</code> → <code>&amp;#x27;</code>.</p>
+    <p>Use HTML encoding when: inserting user-generated content into HTML pages, displaying code examples in HTML, rendering text that might contain <code>&lt;</code> or <code>&amp;</code> characters in HTML, or sanitizing data before storing in HTML templates.</p>
+
+    <h3>Base64 Encoding</h3>
+    <p>Base64 converts any data (text or binary) into a string using only 64 safe ASCII characters (A-Z, a-z, 0-9, +, /, and = for padding). The output is approximately 33% larger than the input but is completely safe to transmit through any text-based channel.</p>
+    <p><strong>Important:</strong> Base64 is encoding, not encryption. It can be instantly decoded by anyone without a key. Never use it to protect sensitive information — it provides no security.</p>
+    <p>Use Base64 when: embedding images directly in CSS (<code>data:image/png;base64,...</code>), transmitting binary data in JSON or XML APIs, working with JWT (JSON Web Token) payloads, encoding email attachments (MIME), or storing binary data in text-only formats.</p>
+
+    <h3>Unicode Escape Sequences</h3>
+    <p>Unicode escaping represents characters using their Unicode code point in <code>\uXXXX</code> format (4-digit hex for Basic Multilingual Plane characters) or <code>\u{XXXXX}</code> for higher planes. Every printable Unicode character has a unique code point.</p>
+    <p>Examples: <code>é</code> → <code>\u00E9</code>, <code>中</code> (Chinese "middle") → <code>\u4E2D</code>, emoji 🚀 → <code>\u{1F680}</code>.</p>
+    <p>Use Unicode escapes when: working with older codebases that only support ASCII source files, writing JavaScript or JSON that needs to be read by strict ASCII parsers, representing non-Latin characters in Java <code>.properties</code> files, or when debugging character encoding issues.</p>
+
+    <h3>Practical Use Cases</h3>
     <ul>
-      <li><strong>HTML entities:</strong> When inserting user-generated content into HTML pages safely.</li>
-      <li><strong>URL encoding:</strong> When building URLs with query parameters that contain special characters.</li>
-      <li><strong>Base64:</strong> When embedding binary data in text formats, or working with JWT tokens and APIs.</li>
-      <li><strong>Unicode escapes:</strong> When you need to represent non-Latin characters in ASCII-only source code.</li>
+      <li><strong>API development:</strong> URL-encode query parameters before appending them to API endpoint URLs. URL-decode parameters received in webhook payloads.</li>
+      <li><strong>XSS prevention:</strong> HTML-encode any user-generated text before rendering it in HTML to prevent script injection attacks.</li>
+      <li><strong>Data URIs:</strong> Base64-encode small images to embed them directly in HTML/CSS without a separate HTTP request, reducing page load time.</li>
+      <li><strong>JWT inspection:</strong> Base64-decode the payload section of a JWT token (the middle section between the two dots) to read its claims without using a specialized tool.</li>
+      <li><strong>Debugging encoding issues:</strong> Use Unicode escape to identify exactly which code point a mystery character is — useful when debugging text corruption or charset mismatches.</li>
+      <li><strong>Email links:</strong> URL-encode the body and subject of <code>mailto:</code> links so that special characters in your pre-filled email body don't break the URL.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/text-to-slug">Text to Slug</a> — Convert text to URL-safe slugs for use in web addresses.</li>
+      <li><a href="/tools/find-replace">Find &amp; Replace</a> — Edit encoded strings or clean up encoding artifacts.</li>
+      <li><a href="/tools/case-converter">Case Converter</a> — Normalize case before encoding for consistent output.</li>
+      <li><a href="/tools/word-counter">Word Counter</a> — Check the length of encoded strings before using in size-limited fields.</li>
     </ul>
   </section>
 </ToolLayout>

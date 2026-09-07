@@ -1,8 +1,8 @@
 ---
 /**
- * AdSlot — Placeholder for Google AdSense ads.
- * Renders a clearly labelled ad container.
- * Replace data-ad-slot values with real AdSense IDs when approved.
+ * AdSlot — Google AdSense ad slot.
+ * Currently hidden until AdSense approval is granted.
+ * To activate: replace the comment block below with real <ins> AdSense tags.
  */
 interface Props {
   position: 'top' | 'sidebar' | 'inline' | 'bottom';
@@ -10,83 +10,43 @@ interface Props {
 }
 
 const { position, format = 'auto' } = Astro.props;
-
-const sizeMap = {
-  top: { minHeight: '90px' },
-  sidebar: { minHeight: '250px' },
-  inline: { minHeight: '120px' },
-  bottom: { minHeight: '90px' },
-};
-
-const style = sizeMap[position] || sizeMap.inline;
 ---
 
 <div
   class={`ad-slot ad-slot--${position}`}
   data-ad-position={position}
   data-ad-format={format}
-  style={`min-height: ${style.minHeight};`}
+  aria-hidden="true"
 >
-  <span class="ad-label">Advertisement</span>
-  <div class="ad-placeholder">
-    <!-- 
-      Google AdSense code goes here after approval.
-      Example:
-      <ins class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-        data-ad-slot="XXXXXXXXXX"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    -->
-    <div class="ad-placeholder-content">
-      <span>Ad Space</span>
-    </div>
-  </div>
+  <!--
+    ADSENSE PLACEHOLDER – hidden until approval.
+    Replace this comment with your real AdSense <ins> tag after approval:
+
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-3019636938770543"
+      data-ad-slot="XXXXXXXXXX"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
 </div>
 
 <style>
   .ad-slot {
-    position: relative;
-    background: var(--color-ad-bg);
-    border: 1px dashed var(--color-ad-border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    display: none;
   }
 
-  .ad-label {
+  /* Un-hide and style once real ads are inserted */
+  .ad-slot:has(ins.adsbygoogle) {
     display: block;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-ad-label);
-    padding: var(--space-1) var(--space-3);
-    text-align: center;
   }
 
-  .ad-placeholder {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ad-placeholder-content {
-    color: var(--color-ad-label);
-    font-size: var(--text-xs);
-    opacity: 0.5;
-  }
-
-  /* Position-specific sizing */
   .ad-slot--top {
     margin-bottom: var(--space-6);
   }
 
   .ad-slot--sidebar {
-    min-height: 250px;
     position: sticky;
     top: calc(var(--header-height) + var(--space-4));
   }

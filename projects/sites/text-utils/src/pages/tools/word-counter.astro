@@ -6,11 +6,14 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'word-counter')!;
 const faq = [
-  { question: 'How does the word counter work?', answer: 'Our word counter processes your text entirely in your browser. As you type or paste text, it instantly calculates the number of words, characters (with and without spaces), sentences, and paragraphs.' },
-  { question: 'Is my text sent to any server?', answer: 'No — all processing happens locally in your browser. Your text never leaves your device, making this tool 100% private and secure.' },
-  { question: 'What counts as a word?', answer: 'A word is any sequence of characters separated by whitespace (spaces, tabs, or line breaks). Hyphenated words like "well-known" count as one word.' },
-  { question: 'Can I use this on mobile?', answer: 'Yes! The tool is fully responsive and works on phones, tablets, and desktops.' },
-  { question: 'What is the reading time estimate based on?', answer: 'Reading time is calculated at an average reading speed of 200 words per minute, which is a commonly accepted average for adult readers.' },
+  { question: 'How does the word counter work?', answer: 'Our word counter processes your text entirely in your browser using JavaScript. As you type or paste text, it instantly splits the content on whitespace characters (spaces, tabs, line breaks) and counts the resulting tokens as words. No data is sent to any server.' },
+  { question: 'Is my text sent to any server?', answer: 'No — all processing happens locally in your browser. Your text never leaves your device, making this tool 100% private and secure. This is especially important when counting sensitive documents like contracts, personal letters, or unpublished writing.' },
+  { question: 'What counts as a word?', answer: 'A word is any sequence of non-whitespace characters separated by whitespace (spaces, tabs, or line breaks). Hyphenated words like "well-known" count as one word. Numbers like "2025" count as one word. URLs count as one word. This matches how Microsoft Word and most academic style guides count words.' },
+  { question: 'How accurate is the reading time estimate?', answer: 'Reading time is calculated at 200 words per minute, which research shows is the average silent reading speed for adult non-fiction readers. Technical or complex content may take longer; simple prose may be faster. For professional writing, 200 wpm is the standard used by platforms like Medium.' },
+  { question: 'What is the difference between characters and characters without spaces?', answer: 'Character count includes every letter, number, space, and punctuation mark. Characters without spaces removes all whitespace, giving you a count of pure content characters. Some academic journals and publishers measure article length by characters without spaces, as this gives a more consistent measure across different writing styles.' },
+  { question: 'How are sentences counted?', answer: 'Sentences are detected by counting sentence-ending punctuation marks (periods, exclamation marks, and question marks). This is an approximation — abbreviations like "Dr." or "U.S." may be counted as sentence breaks. For very precise sentence counts, manual review is recommended.' },
+  { question: 'Can I use this on mobile?', answer: 'Yes! The tool is fully responsive and works on all modern smartphones, tablets, and desktops. You can type directly into the text area, or paste from your device clipboard using the Paste button.' },
+  { question: 'What word count should I aim for in different contexts?', answer: 'For blog posts and SEO: 1,500–2,500 words is ideal for ranking. For academic essays: follow your assignment guidelines, typically 500–5,000 words. For email subject lines: under 60 characters. For meta descriptions: 150–160 characters. For Twitter/X posts: up to 280 characters. For LinkedIn posts: 1,300 characters performs best.' },
 ];
 ---
 
@@ -71,22 +74,42 @@ const faq = [
   </div>
 
   <section class="tool-guide">
-    <h2>How to Use the Word Counter</h2>
-    <p>Simply type or paste your text into the text area above. The word counter instantly calculates all metrics as you type — no need to click a button. You can also paste text directly from your clipboard using the "Paste from Clipboard" button.</p>
+    <h2>How to Use the Word & Character Counter</h2>
+    <p>Simply type or paste your text into the text area above. The counter instantly updates all metrics as you type — no button click required. You can also paste text directly from your clipboard using the "Paste from Clipboard" button, which is especially useful on mobile devices.</p>
 
-    <h3>Understanding the Metrics</h3>
-    <p><strong>Words</strong> are counted by splitting your text on whitespace — spaces, tabs, and line breaks. Hyphenated words like "well-known" count as one word, matching how most academic style guides count them.</p>
-    <p><strong>Characters</strong> include every letter, number, space, and punctuation mark. The "No Spaces" count removes all whitespace, giving you the pure character count used by some academic journals and character-limited platforms.</p>
-    <p><strong>Sentences</strong> are detected by counting sentence-ending punctuation marks (periods, exclamation marks, question marks). This gives you a quick measure of sentence count for readability analysis.</p>
-    <p><strong>Paragraphs</strong> are separated by blank lines. A single block of text without blank lines counts as one paragraph.</p>
-    <p><strong>Reading Time</strong> is estimated at 200 words per minute, which is the commonly accepted average adult reading speed for non-technical content.</p>
+    <p>To clear the text area and reset all counters, click the "Clear" button. To copy a summary of all stats to your clipboard (useful for notes or reports), click "Copy Stats".</p>
 
-    <h3>Common Use Cases</h3>
+    <h3>Understanding Each Metric</h3>
+    <p><strong>Words</strong> — Counted by splitting your text on whitespace (spaces, tabs, and newlines) and counting non-empty chunks. This matches how Microsoft Word, Google Docs, and most academic institutions count words. Hyphenated words like "well-known" count as one word, matching standard style guides including APA, MLA, and Chicago.</p>
+    <p><strong>Characters</strong> — Every letter, number, symbol, space, and punctuation mark is counted. This is the metric used by social media platforms with character limits (Twitter/X: 280, SMS: 160, Instagram bio: 150). It is also used by some SEO tools to measure title tag and meta description length.</p>
+    <p><strong>Characters Without Spaces</strong> — Only non-whitespace characters are counted. Some academic journals — especially in linguistics and translation studies — specify manuscript length in characters excluding spaces, since this gives a more consistent measure across languages with different word structures.</p>
+    <p><strong>Sentences</strong> — Detected by counting sentence-ending punctuation marks: periods (.), exclamation marks (!), and question marks (?). This is an estimate — abbreviations like "Dr." or "e.g." may be miscounted. Use this as a rough guide for readability analysis, not for precision editing.</p>
+    <p><strong>Paragraphs</strong> — Each block of text separated by a blank line is counted as one paragraph. A single block with no blank lines counts as one paragraph. Standard editorial guidelines recommend 3–5 sentences per paragraph for optimal readability on screen.</p>
+    <p><strong>Reading Time</strong> — Calculated at 200 words per minute, the widely accepted average adult reading speed for non-technical prose. Research published in Reading and Writing journal (2019) confirms 238 wpm as the median for English fiction; 200 wpm is the conservative standard used by Medium, Substack, and most editorial platforms. Technical documentation may take 2× longer.</p>
+
+    <h3>Practical Use Cases</h3>
     <ul>
-      <li><strong>Academic essays:</strong> Check if your essay meets the required word count before submitting.</li>
-      <li><strong>Blog posts and SEO:</strong> Aim for 1,500–2,500 words for in-depth articles that rank well in search engines.</li>
-      <li><strong>Social media:</strong> Use the character count to stay within platform limits (Twitter: 280 chars, LinkedIn: 3,000 chars).</li>
-      <li><strong>Meta descriptions:</strong> Keep your SEO meta descriptions between 150–160 characters for optimal display in Google search results.</li>
+      <li><strong>Academic essays:</strong> Most university assignments specify exact word ranges. Use this tool to check your essay is within the required minimum and maximum before submitting. Note: most institutions count footnotes and references separately — check your guidelines.</li>
+      <li><strong>Blog posts and SEO content:</strong> Research consistently shows that long-form content (1,500–2,500+ words) tends to rank better in Google Search. Use this tool to track your article length as you write. Aim for depth over length — a focused 1,000-word article beats a padded 3,000-word one.</li>
+      <li><strong>Social media posts:</strong> Check character counts before pasting into Twitter/X (280 chars), LinkedIn (3,000 chars for posts), Instagram captions (2,200 chars), or Facebook posts. Meta descriptions for SEO should stay between 150–160 characters.</li>
+      <li><strong>Freelance writing invoicing:</strong> Many freelance writers charge per word (e.g., $0.10/word). Use this tool to get an accurate word count for billing before submitting your work.</li>
+      <li><strong>Readability analysis:</strong> Divide word count by sentence count to get your average sentence length. Aim for 15–20 words per sentence for general audiences. Above 25 words per sentence starts to feel dense and is harder to read on mobile screens.</li>
+      <li><strong>eBook and publishing:</strong> Standard novel lengths: short story (1,000–7,500 words), novella (20,000–50,000 words), novel (80,000–100,000 words). Non-fiction books are typically 50,000–80,000 words.</li>
+    </ul>
+
+    <h3>Tips for Accurate Counting</h3>
+    <ul>
+      <li>If you are pasting from a PDF, some PDF text extraction may include extra spaces or line breaks that inflate the word count. Review the text after pasting.</li>
+      <li>Emojis count as characters. On platforms that use Unicode character counting (like Twitter), a single emoji may count as 2 characters.</li>
+      <li>For academic work that includes footnotes, count your main text and footnotes separately to match your institution's counting method.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/case-converter">Case Converter</a> — Convert your counted text to uppercase, lowercase, title case, or camelCase.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Remove extra spaces before counting to get an accurate word count.</li>
+      <li><a href="/tools/find-replace">Find & Replace</a> — Edit specific phrases before running your final word count.</li>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Remove repeated lines before counting unique content.</li>
     </ul>
   </section>
 </ToolLayout>

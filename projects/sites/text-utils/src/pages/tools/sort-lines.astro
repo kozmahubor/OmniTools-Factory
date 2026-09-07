@@ -6,9 +6,13 @@ import { SITE, TOOLS } from '../../config';
 
 const tool = TOOLS.find(t => t.slug === 'sort-lines')!;
 const faq = [
-  { question: 'What sort options are available?', answer: 'You can sort lines Alphabetically (A-Z or Z-A), Numerically, by Line Length, or Reverse current order.' },
-  { question: 'Can I sort case-insensitively?', answer: 'Yes! Toggle case-insensitive sorting to treat uppercase and lowercase letters equally.' },
-  { question: 'Is my data stored on a server?', answer: 'No — all line sorting takes place purely in your browser using JavaScript.' }
+  { question: 'What sort options are available?', answer: 'You can sort lines Alphabetically (A-Z or Z-A), Numerically (1-9 or 9-1), by Line Length (shortest or longest first), Reverse current order (flip without sorting), or Shuffle/Randomize (random order every time).' },
+  { question: 'Can I sort case-insensitively?', answer: 'Yes! The "Case insensitive" toggle (enabled by default) makes the sort treat uppercase and lowercase letters equally. So "apple", "Apple", and "APPLE" will all sort together. Disable it for a strict Unicode code-point sort where uppercase letters come before lowercase.' },
+  { question: 'Is my data stored on a server?', answer: 'No — all line sorting takes place purely in your browser using JavaScript. Your text never leaves your device.' },
+  { question: 'What is the difference between alphabetical and numerical sorting?', answer: 'Alphabetical (lexicographic) sort compares characters left to right like a dictionary. In alphabetical sort, "10" comes before "9" because "1" < "9". Numerical sort compares the leading numeric value of each line, so "10" correctly sorts after "9". Always use numerical sort for lists that start with numbers.' },
+  { question: 'What does Sort by Length do?', answer: 'Sort by Length orders lines by their character count, not their content. "cat" (3 chars) comes before "elephant" (8 chars) when sorting shortest-first. This is useful for organizing things by complexity, creating visual rhythm in lists, or finding your shortest/longest items quickly.' },
+  { question: 'What does Shuffle do?', answer: 'Shuffle randomizes the order of lines using the Fisher-Yates algorithm (the standard unbiased shuffle algorithm). Each click produces a different random order. Useful for creating random quiz questions from a list, picking a random item, or randomizing playlist order.' },
+  { question: 'Can I sort a numbered list and keep the numbers?', answer: 'Yes — the sort operates on the entire line including any leading numbers or prefixes. If you have a numbered list like "1. Apple\n2. Banana" and sort alphabetically, the numbers will move with their items. If you want to remove and re-add numbers after sorting, use Find & Replace to strip the numbers first.' },
 ];
 ---
 
@@ -74,20 +78,39 @@ const faq = [
 
   <section class="tool-guide">
     <h2>How to Sort Lines of Text</h2>
-    <p>Paste your text into the input area. Each line is treated as a separate item to sort. Choose your preferred sort method and the tool instantly reorders the lines.</p>
+    <p>Paste your text into the input area above. Each line is treated as a separate item. Choose your preferred sort method from the dropdown and the tool instantly reorders the lines. Click "Copy Sorted Lines" to copy the result to your clipboard.</p>
 
-    <h3>Sort Methods</h3>
-    <p><strong>Alphabetical (A→Z / Z→A):</strong> Sorts lines in standard dictionary order. Numbers come before letters. Useful for sorting names, titles, or any text-based list.</p>
-    <p><strong>Numeric:</strong> Sorts lines by their leading number value. Lines starting with "10" sort after "9" (unlike alphabetical sort where "10" comes before "9"). Essential for numbered lists and data.</p>
-    <p><strong>By Length:</strong> Sorts lines by character count — shortest to longest or vice versa. Useful for organizing items by size or complexity.</p>
-    <p><strong>Reverse:</strong> Flips the order of lines without any sorting logic. The last line becomes first.</p>
+    <h3>Sort Methods Explained</h3>
+    <p><strong>Alphabetical (A→Z / Z→A)</strong> sorts lines in dictionary order using Unicode code-point comparison. Numbers come before letters in ASCII order. This is ideal for sorting names, book titles, product names, or any text-based list where alphabetical order is meaningful. Enabling "Case insensitive" makes uppercase and lowercase letters sort together (the default behavior).</p>
 
-    <h3>When to Use This Tool</h3>
+    <p><strong>Numerical (1→9 / 9→1)</strong> sorts lines by their leading numeric value. The key difference from alphabetical sort is that "10" correctly comes after "9" (numerically), not before it (alphabetically, where "1" < "9" character-by-character). Always use numerical sort for numbered lists, dataset rows, or any list where lines start with numbers.</p>
+
+    <p><strong>By Length (Shortest/Longest first)</strong> orders lines purely by their character count, ignoring content. This is useful for: organizing list items visually from short to long, finding the longest/shortest entries in a dataset, creating a word list sorted by word length, or identifying potentially truncated data entries.</p>
+
+    <p><strong>Reverse Current Order</strong> flips the order of lines without any content-based sorting. The last line becomes first, the first becomes last, and all other lines shift accordingly. This is a simple way to reverse a chronological log, flip a list prepared bottom-to-top, or undo a previous reverse operation.</p>
+
+    <p><strong>Shuffle / Randomize</strong> uses the Fisher-Yates algorithm to randomly reorder lines. Each click produces a statistically unbiased random permutation. Common uses: creating randomized quiz questions from a list, random sampling from a large list, or generating random orderings for experiments.</p>
+
+    <h3>Practical Use Cases</h3>
     <ul>
-      <li><strong>Organizing lists:</strong> Sort shopping lists, to-do items, or brainstorming notes alphabetically.</li>
-      <li><strong>Data preparation:</strong> Sort CSV rows, database exports, or configuration entries for easier review.</li>
-      <li><strong>Code formatting:</strong> Sort import statements, CSS properties, or configuration keys alphabetically for consistency.</li>
-      <li><strong>Content creation:</strong> Arrange keywords, tags, or categories in a logical order before publishing.</li>
+      <li><strong>Organizing glossaries and indexes:</strong> Sort alphabetically to create a professional glossary, index, or bibliography for a document.</li>
+      <li><strong>Code formatting:</strong> Sort CSS properties alphabetically for consistency. Sort import statements in JavaScript or Python files. Sort configuration keys in JSON, YAML, or .env files. Many style guides (like Google's) recommend alphabetical imports.</li>
+      <li><strong>Data preparation:</strong> Sort exported CSV rows, database query results, or API response lists for easier manual review, or before importing into a spreadsheet.</li>
+      <li><strong>Deduplication workflow:</strong> Sort lines before running them through the Duplicate Line Remover — sorted lists make it easier to visually spot duplicates.</li>
+      <li><strong>Priority ranking:</strong> Sort tasks or items numerically by priority score. Sort bug tickets by severity number. Sort products by price (if prices are on their own line).</li>
+      <li><strong>Randomizing tests and surveys:</strong> Shuffle a list of questions to create multiple versions of a quiz with different question order, reducing copying between participants.</li>
+      <li><strong>Finding outliers:</strong> Sort by length to quickly spot unusually long or short lines in a dataset, which may indicate data entry errors or truncation issues.</li>
+    </ul>
+
+    <h3>Alphabetical vs Natural Sort</h3>
+    <p>This tool uses <em>lexicographic</em> (alphabetical) sort for the alphabetical modes, not <em>natural</em> sort. Lexicographic sort compares strings character by character in Unicode code-point order. This means "file10.txt" sorts before "file2.txt" alphabetically, because "1" < "2" at the third character. If your data contains filenames, version numbers, or other strings with embedded numbers that should sort naturally ("file2" before "file10"), use the Numerical sort option or pre-process your data to zero-pad numbers before sorting.</p>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Remove duplicate lines from your sorted output.</li>
+      <li><a href="/tools/text-reverser">Text Reverser</a> — Reverse line order or individual characters.</li>
+      <li><a href="/tools/find-replace">Find &amp; Replace</a> — Clean up or reformat lines before sorting.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Normalize whitespace before sorting to ensure accurate comparisons.</li>
     </ul>
   </section>
 </ToolLayout>
