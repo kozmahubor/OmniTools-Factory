@@ -78,8 +78,8 @@ const faq = [
     <p>Use Base64 when: embedding images directly in CSS (<code>data:image/png;base64,...</code>), transmitting binary data in JSON or XML APIs, working with JWT (JSON Web Token) payloads, encoding email attachments (MIME), or storing binary data in text-only formats.</p>
 
     <h3>Unicode Escape Sequences</h3>
-    <p>Unicode escaping represents characters using their Unicode code point in <code>\uXXXX</code> format (4-digit hex for Basic Multilingual Plane characters) or <code>\u{XXXXX}</code> for higher planes. Every printable Unicode character has a unique code point.</p>
-    <p>Examples: <code>é</code> → <code>\u00E9</code>, <code>中</code> (Chinese "middle") → <code>\u4E2D</code>, emoji 🚀 → <code>\u{1F680}</code>.</p>
+    <p>Unicode escaping represents characters using their Unicode code point in <code>\uXXXX</code> format (4-digit hex for Basic Multilingual Plane characters) or <code>\u&#123;XXXXX&#125;</code> for higher planes. Every printable Unicode character has a unique code point.</p>
+    <p>Examples: <code>é</code> → <code>\u00E9</code>, <code>中</code> (Chinese "middle") → <code>\u4E2D</code>, emoji &#x1F680; → <code>\u&#123;1F680&#125;</code>.</p>
     <p>Use Unicode escapes when: working with older codebases that only support ASCII source files, writing JavaScript or JSON that needs to be read by strict ASCII parsers, representing non-Latin characters in Java <code>.properties</code> files, or when debugging character encoding issues.</p>
 
     <h3>Practical Use Cases</h3>

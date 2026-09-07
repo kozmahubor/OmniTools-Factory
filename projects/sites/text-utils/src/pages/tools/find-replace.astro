@@ -109,7 +109,7 @@ const faq = [
 
     <h3>Tips for Better Replacements</h3>
     <ul>
-      <li>In regex mode, special characters like <code>.</code>, <code>*</code>, <code>+</code>, <code>(</code>, <code>)</code>, <code>[</code>, <code>]</code>, <code>{</code>, <code>}</code>, <code>^</code>, <code>$</code>, <code>|</code>, and <code>\</code> must be escaped with a backslash (<code>\.</code>, <code>\*</code>, etc.) if you want to match them literally.</li>
+      <li>In regex mode, special characters like <code>.</code>, <code>*</code>, <code>+</code>, <code>(</code>, <code>)</code>, <code>[</code>, <code>]</code>, <code>&#123;</code>, <code>&#125;</code>, <code>^</code>, <code>$</code>, <code>&#124;</code>, and <code>\</code> must be escaped with a backslash (<code>\.</code>, <code>\*</code>, etc.) if you want to match them literally.</li>
       <li>Use capture groups (<code>(pattern)</code>) and backreferences (<code>$1</code>, <code>$2</code>) in your replacement string to rearrange matched content. For example, to swap two words: Find = <code>(\w+) (\w+)</code>, Replace = <code>$2 $1</code>.</li>
       <li>Test your regex on a small sample first before applying to large documents to ensure it matches what you expect.</li>
     </ul>
