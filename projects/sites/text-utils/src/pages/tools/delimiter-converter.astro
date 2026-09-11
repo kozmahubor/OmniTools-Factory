@@ -1,0 +1,457 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'delimiter-converter')!;
+const faq = [
+  { question: 'What does the List & Delimiter Converter do?', answer: 'It converts lists and data between different separators — such as turning a vertical column of values from Excel into a comma-separated list, changing semicolons to pipes, or wrapping every item in quotation marks.' },
+  { question: 'Can I convert a column copied from Excel into a comma-separated list?', answer: 'Yes! Simply paste your column from Excel, and choose "Comma (,)" as your target delimiter. You can also automatically wrap items with quotes.' },
+  { question: 'Can I add custom prefixes and suffixes to each item?', answer: 'Yes. Use the Item Prefix and Suffix fields. For instance, prefixing with "- " turns lines into a Markdown bullet list, or prefixing with "<li>" and suffixing with "</li>" produces HTML list items.' },
+  { question: 'Can I change comma-separated text back into vertical lines?', answer: 'Yes! Click the "Comma &rarr; Column" preset button or set Output Delimiter to "Newline".' },
+  { question: 'Does it remove duplicate entries?', answer: 'Yes. Checking "Remove duplicates" eliminates redundant entries so your resulting list only contains unique elements.' },
+  { question: 'Is my data processed locally?', answer: 'Completely locally. The transformation runs 100% in your browser using JavaScript. No information is stored or transmitted.' },
+  { question: 'Can I specify a custom delimiter?', answer: 'Yes. Select "Custom" for either input or output delimiter to specify custom separators such as " AND ", " OR ", " / ", or tabs.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-header">
+      <label for="text-input" class="label">Input Items</label>
+      <div class="header-actions">
+        <button id="btn-sample" class="btn btn-secondary btn-sm" type="button">Load Sample</button>
+        <button id="btn-clear" class="btn btn-secondary btn-sm" type="button">Clear</button>
+      </div>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="presets-bar">
+      <span class="preset-title">Quick Presets:</span>
+      <button class="preset-chip active" data-preset="col-comma" type="button">Column &rarr; Comma</button>
+      <button class="preset-chip" data-preset="comma-col" type="button">Comma &rarr; Column</button>
+      <button class="preset-chip" data-preset="col-quoted" type="button">Quoted Comma ('item')</button>
+      <button class="preset-chip" data-preset="col-semi" type="button">Column &rarr; Semicolon</button>
+      <button class="preset-chip" data-preset="col-markdown" type="button">Markdown List (- item)</button>
+    </div>
+
+    <textarea
+      id="text-input"
+      class="input code-input"
+      placeholder="Paste items separated by lines, commas, tabs, or spaces..."
+      rows="7"
+      aria-label="Enter items to convert delimiters"
+    ></textarea>
+
+    <div class="options-grid">
+      <div class="option-field">
+        <label for="opt-input-delim">Input Separator</label>
+        <select id="opt-input-delim" class="input">
+          <option value="newline">Newline / Line Break</option>
+          <option value="comma">Comma (,)</option>
+          <option value="semicolon">Semicolon (;)</option>
+          <option value="tab">Tab (\t)</option>
+          <option value="space">Space</option>
+          <option value="auto">Auto-detect</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="option-field" id="custom-input-box" style="display: none;">
+        <label for="custom-input-val">Custom Input Separator</label>
+        <input type="text" id="custom-input-val" class="input" placeholder="e.g. | or ///" />
+      </div>
+
+      <div class="option-field">
+        <label for="opt-output-delim">Output Separator</label>
+        <select id="opt-output-delim" class="input">
+          <option value="comma">Comma + Space (, )</option>
+          <option value="comma_plain">Comma Only (,)</option>
+          <option value="newline">Newline / Line Break</option>
+          <option value="semicolon">Semicolon (; )</option>
+          <option value="pipe">Pipe ( | )</option>
+          <option value="space">Single Space</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="option-field" id="custom-output-box" style="display: none;">
+        <label for="custom-output-val">Custom Output Separator</label>
+        <input type="text" id="custom-output-val" class="input" placeholder="e.g.  OR  " />
+      </div>
+
+      <div class="option-field">
+        <label for="opt-prefix">Item Prefix (optional)</label>
+        <input type="text" id="opt-prefix" class="input" placeholder="e.g. ' or &quot; or - " />
+      </div>
+
+      <div class="option-field">
+        <label for="opt-suffix">Item Suffix (optional)</label>
+        <input type="text" id="opt-suffix" class="input" placeholder="e.g. ' or &quot;" />
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-dedupe" /> Remove duplicates
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-trim" checked /> Trim spaces
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-skip-empty" checked /> Skip empty items
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-sort" /> Sort (A &rarr; Z)
+      </label>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-input">0</span>
+        <span class="tool-stat-label">Input Items</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-output">0</span>
+        <span class="tool-stat-label">Output Items</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-unique">0</span>
+        <span class="tool-stat-label">Unique Items</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Converted List</h2>
+        <button id="btn-copy" class="btn btn-primary" type="button">📋 Copy Result</button>
+      </div>
+      <pre class="tool-result-content code-block" id="result"></pre>
+    </div>
+  </div>
+
+  <section class="tool-guide">
+    <h2>Versatile Delimiter &amp; List Formatting</h2>
+    <p>Every professional works with lists: email addresses, product SKUs, tags, IP addresses, zip codes, and code identifiers. Frequently, data from one software (like Excel or a log file) must be formatted with commas, quotes, or custom separators for another tool (like an email campaign or database query).</p>
+    <p>FixMyString Delimiter Converter effortlessly transitions text between columns, commas, quotes, and custom delimiters in real time.</p>
+
+    <h3>Common Use Cases</h3>
+    <ul>
+      <li><strong>Excel column to comma-separated list:</strong> Select a column in Excel, copy it, and get an immediate comma-separated string suitable for search filters or email BCCs.</li>
+      <li><strong>Formatting programming arrays:</strong> Wrap each item in quotes (<code>&quot;item&quot;</code>) and join them with commas to generate JavaScript, Python, or PHP array definitions.</li>
+      <li><strong>Markdown &amp; HTML lists:</strong> Prepend <code>- </code> to create Markdown lists, or wrap items with <code>&lt;li&gt;...&lt;/li&gt;</code> for HTML lists.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/sql-in-builder">SQL IN Clause Builder</a> — Convert columns specifically to SQL IN statements.</li>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Filter repeated lines.</li>
+      <li><a href="/tools/whitespace-cleaner">Whitespace Cleaner</a> — Clean extra spaces and tabs.</li>
+    </ul>
+  </section>
+</ToolLayout>
+
+<script is:inline>
+  (function() {
+    const inputEl = document.getElementById('text-input');
+    const sampleBtn = document.getElementById('btn-sample');
+    const clearBtn = document.getElementById('btn-clear');
+
+    const inputDelimEl = document.getElementById('opt-input-delim');
+    const customInputBox = document.getElementById('custom-input-box');
+    const customInputVal = document.getElementById('custom-input-val');
+
+    const outputDelimEl = document.getElementById('opt-output-delim');
+    const customOutputBox = document.getElementById('custom-output-box');
+    const customOutputVal = document.getElementById('custom-output-val');
+
+    const prefixEl = document.getElementById('opt-prefix');
+    const suffixEl = document.getElementById('opt-suffix');
+
+    const dedupeEl = document.getElementById('opt-dedupe');
+    const trimEl = document.getElementById('opt-trim');
+    const skipEmptyEl = document.getElementById('opt-skip-empty');
+    const sortEl = document.getElementById('opt-sort');
+
+    const resultEl = document.getElementById('result');
+    const copyBtn = document.getElementById('btn-copy');
+
+    const statInput = document.getElementById('stat-input');
+    const statOutput = document.getElementById('stat-output');
+    const statUnique = document.getElementById('stat-unique');
+
+    const presetChips = document.querySelectorAll('.preset-chip');
+
+    presetChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        presetChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const preset = chip.getAttribute('data-preset');
+        if (preset === 'col-comma') {
+          inputDelimEl.value = 'newline';
+          outputDelimEl.value = 'comma';
+          prefixEl.value = '';
+          suffixEl.value = '';
+        } else if (preset === 'comma-col') {
+          inputDelimEl.value = 'comma';
+          outputDelimEl.value = 'newline';
+          prefixEl.value = '';
+          suffixEl.value = '';
+        } else if (preset === 'col-quoted') {
+          inputDelimEl.value = 'newline';
+          outputDelimEl.value = 'comma';
+          prefixEl.value = "'";
+          suffixEl.value = "'";
+        } else if (preset === 'col-semi') {
+          inputDelimEl.value = 'newline';
+          outputDelimEl.value = 'semicolon';
+          prefixEl.value = '';
+          suffixEl.value = '';
+        } else if (preset === 'col-markdown') {
+          inputDelimEl.value = 'newline';
+          outputDelimEl.value = 'newline';
+          prefixEl.value = '- ';
+          suffixEl.value = '';
+        }
+
+        checkCustomDelims();
+        update();
+      });
+    });
+
+    function checkCustomDelims() {
+      customInputBox.style.display = inputDelimEl.value === 'custom' ? 'flex' : 'none';
+      customOutputBox.style.display = outputDelimEl.value === 'custom' ? 'flex' : 'none';
+    }
+
+    inputDelimEl.addEventListener('change', checkCustomDelims);
+    outputDelimEl.addEventListener('change', checkCustomDelims);
+
+    sampleBtn.addEventListener('click', () => {
+      inputEl.value = "Apple\nBanana\nOrange\nBanana\nMango\nPineapple";
+      update();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      update();
+    });
+
+    function getItems(text) {
+      const mode = inputDelimEl.value;
+      if (mode === 'newline') return text.split(/\r?\n/);
+      if (mode === 'comma') return text.split(',');
+      if (mode === 'semicolon') return text.split(';');
+      if (mode === 'tab') return text.split('\t');
+      if (mode === 'space') return text.split(/\s+/);
+      if (mode === 'custom') {
+        const sep = customInputVal.value || ',';
+        return text.split(sep);
+      }
+      // auto
+      return text.split(/[\r\n,;]+/);
+    }
+
+    function getOutputDelim() {
+      const mode = outputDelimEl.value;
+      if (mode === 'comma') return ', ';
+      if (mode === 'comma_plain') return ',';
+      if (mode === 'newline') return '\n';
+      if (mode === 'semicolon') return '; ';
+      if (mode === 'pipe') return ' | ';
+      if (mode === 'space') return ' ';
+      if (mode === 'custom') return customOutputVal.value || ', ';
+      return ', ';
+    }
+
+    function update() {
+      const raw = inputEl.value;
+      if (!raw) {
+        resultEl.textContent = '';
+        statInput.textContent = '0';
+        statOutput.textContent = '0';
+        statUnique.textContent = '0';
+        return;
+      }
+
+      let items = getItems(raw);
+
+      if (trimEl.checked) {
+        items = items.map(i => i.trim());
+      }
+      if (skipEmptyEl.checked) {
+        items = items.filter(i => i.length > 0);
+      }
+
+      statInput.textContent = String(items.length);
+      const uniqueCount = new Set(items.map(i => i.toLowerCase())).size;
+      statUnique.textContent = String(uniqueCount);
+
+      if (dedupeEl.checked) {
+        const seen = new Set();
+        const dedupe = [];
+        for (const it of items) {
+          const key = it.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            dedupe.push(it);
+          }
+        }
+        items = dedupe;
+      }
+
+      if (sortEl.checked) {
+        items.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+      }
+
+      statOutput.textContent = String(items.length);
+
+      const pref = prefixEl.value || '';
+      const suff = suffixEl.value || '';
+      const transformed = items.map(item => pref + item + suff);
+      const delim = getOutputDelim();
+
+      resultEl.textContent = transformed.join(delim);
+    }
+
+    [
+      inputEl, inputDelimEl, customInputVal, outputDelimEl, customOutputVal,
+      prefixEl, suffixEl, dedupeEl, trimEl, skipEmptyEl, sortEl
+    ].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    checkCustomDelims();
+    update();
+  })();
+</script>
+
+<style>
+  .input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .presets-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .preset-title {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .preset-chip {
+    padding: 4px 10px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-main);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-chip:hover {
+    background: var(--color-surface-hover);
+  }
+
+  .preset-chip.active {
+    background: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+  }
+
+  .code-input {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .option-field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .code-block {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 420px;
+    overflow-y: auto;
+    margin: 0;
+  }
+</style>

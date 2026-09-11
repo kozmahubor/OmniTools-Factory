@@ -1,0 +1,442 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'markdown-table-generator')!;
+const faq = [
+  { question: 'How do I convert an Excel table to Markdown?', answer: 'Select the cells in Excel or Google Sheets, copy them (Ctrl+C), and paste them into the input area. The tool automatically formats them into a clean Markdown table (| Header |) with aligned pipes.' },
+  { question: 'Does it support TSV and CSV input?', answer: 'Yes! Both Tab-Separated Values (the clipboard format of Excel and Google Sheets) and Comma-Separated Values (CSV) are automatically detected and converted.' },
+  { question: 'Can I set column text alignment (Left, Center, Right)?', answer: 'Yes. You can set global alignment or customize alignment column by column using standard Markdown syntax (:--- for left, :---: for center, ---: for right).' },
+  { question: 'Can it also generate HTML <table> code?', answer: 'Yes! Choose "HTML Table" from the output format dropdown to generate clean, semantic <table><thead><tbody><tr><th> HTML markup instead of Markdown.' },
+  { question: 'Does it pad columns for readable raw Markdown in code editors?', answer: 'Yes. "Pretty Aligned" pads each column with spaces so that pipes vertically align in raw text editors and GitHub diffs, making your markdown files easy to read.' },
+  { question: 'Is my spreadsheet data uploaded to any server?', answer: 'No. All processing happens entirely inside your browser. No data ever leaves your device.' },
+  { question: 'Can it handle pipes (|) and newlines inside cells?', answer: 'Yes. Any existing pipe characters inside your cell data are automatically escaped as &#124; to prevent breaking the Markdown table structure.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-header">
+      <label for="text-input" class="label">Paste from Excel, Google Sheets, or CSV</label>
+      <div class="header-actions">
+        <button id="btn-sample" class="btn btn-secondary btn-sm" type="button">Load Sample</button>
+        <button id="btn-clear" class="btn btn-secondary btn-sm" type="button">Clear</button>
+      </div>
+    </div>
+
+    <textarea
+      id="text-input"
+      class="input code-input"
+      placeholder="Copy cells in Excel/Sheets and paste here..."
+      rows="8"
+      aria-label="Enter spreadsheet cells or CSV"
+    ></textarea>
+
+    <div class="options-grid">
+      <div class="option-field">
+        <label for="opt-format">Output Format</label>
+        <select id="opt-format" class="input">
+          <option value="markdown-pretty">Markdown (Pretty Aligned)</option>
+          <option value="markdown-compact">Markdown (Compact)</option>
+          <option value="html">HTML (&lt;table&gt;)</option>
+        </select>
+      </div>
+
+      <div class="option-field">
+        <label for="opt-align">Default Alignment</label>
+        <select id="opt-align" class="input">
+          <option value="left">Left Aligned (:---)</option>
+          <option value="center">Center Aligned (:---:)</option>
+          <option value="right">Right Aligned (---:)</option>
+        </select>
+      </div>
+
+      <div class="option-field">
+        <label for="opt-delimiter">Input Delimiter</label>
+        <select id="opt-delimiter" class="input">
+          <option value="auto">Auto-detect (Tab / Comma)</option>
+          <option value="tab">Tab (\t - Excel)</option>
+          <option value=",">Comma (, - CSV)</option>
+          <option value=";">Semicolon (;)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-header" checked /> First row is header
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-strip" checked /> Trim cell whitespace
+      </label>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-rows">0</span>
+        <span class="tool-stat-label">Total Rows</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-cols">0</span>
+        <span class="tool-stat-label">Columns</span>
+      </div>
+    </div>
+
+    <!-- Visual Table Preview -->
+    <div class="preview-section" id="preview-container" style="display: none;">
+      <h3 class="preview-title">Visual Preview</h3>
+      <div class="table-responsive" id="table-preview"></div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2 id="result-label">Generated Markdown</h2>
+        <button id="btn-copy" class="btn btn-primary" type="button">📋 Copy Markdown</button>
+      </div>
+      <pre class="tool-result-content code-block" id="result"></pre>
+    </div>
+  </div>
+
+  <section class="tool-guide">
+    <h2>How to Convert Spreadsheets into Markdown Tables</h2>
+    <p>Markdown tables are essential for GitHub README files, technical documentation, Notion workspaces, and developer blogs. However, manually typing pipe characters (<code>&#124;</code>) and hyphens is tedious and error-prone.</p>
+    <p>With FixMyString, simply copy any range of cells from Microsoft Excel, Google Sheets, LibreOffice Calc, or Apple Numbers and paste them into the tool. It instantly formats them into clean, perfectly aligned GitHub-Flavored Markdown tables.</p>
+
+    <h3>Markdown Table Alignment Syntax</h3>
+    <ul>
+      <li><code>:---</code> — Left-aligned column (standard for text and names).</li>
+      <li><code>:---:</code> — Center-aligned column (ideal for status badges, dates, and codes).</li>
+      <li><code>---:</code> — Right-aligned column (best practice for financial numbers and metrics).</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/csv-to-json">CSV to JSON Converter</a> — Convert tabular spreadsheet data to JSON.</li>
+      <li><a href="/tools/delimiter-converter">List &amp; Delimiter Converter</a> — Convert and wrap item lists.</li>
+      <li><a href="/tools/sort-lines">Sort Lines</a> — Sort text rows alphabetically or numerically.</li>
+    </ul>
+  </section>
+</ToolLayout>
+
+<script is:inline>
+  (function() {
+    const inputEl = document.getElementById('text-input');
+    const sampleBtn = document.getElementById('btn-sample');
+    const clearBtn = document.getElementById('btn-clear');
+    const formatEl = document.getElementById('opt-format');
+    const alignEl = document.getElementById('opt-align');
+    const delimEl = document.getElementById('opt-delimiter');
+    const headerEl = document.getElementById('opt-header');
+    const stripEl = document.getElementById('opt-strip');
+    const resultEl = document.getElementById('result');
+    const resultLabel = document.getElementById('result-label');
+    const copyBtn = document.getElementById('btn-copy');
+
+    const previewContainer = document.getElementById('preview-container');
+    const tablePreview = document.getElementById('table-preview');
+
+    const statRows = document.getElementById('stat-rows');
+    const statCols = document.getElementById('stat-cols');
+
+    sampleBtn.addEventListener('click', () => {
+      inputEl.value = "Plan\tUsers\tStorage\tMonthly Price\nStarter\t1-5\t10 GB\t$12\nPro\t6-25\t100 GB\t$49\nEnterprise\tUnlimited\t1 TB\t$199";
+      update();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      update();
+    });
+
+    function detectDelim(text) {
+      const firstLine = text.split('\n')[0] || '';
+      const tabCount = (firstLine.match(/\t/g) || []).length;
+      const commaCount = (firstLine.match(/,/g) || []).length;
+      const semiCount = (firstLine.match(/;/g) || []).length;
+
+      if (tabCount >= commaCount && tabCount >= semiCount && tabCount > 0) return '\t';
+      if (semiCount > commaCount) return ';';
+      return commaCount > 0 ? ',' : '\t';
+    }
+
+    function parseRows(text, delim) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+      return lines.map(line => {
+        let cells = line.split(delim);
+        if (stripEl.checked) {
+          cells = cells.map(c => c.trim());
+        }
+        return cells;
+      });
+    }
+
+    function escapeMarkdownCell(str) {
+      return (str || '').replace(/\|/g, '&#124;');
+    }
+
+    function buildMarkdown(rows, align, pretty) {
+      if (rows.length === 0) return '';
+      const colCount = Math.max(...rows.map(r => r.length));
+
+      // Normalize row lengths
+      const normalized = rows.map(r => {
+        const copy = [...r];
+        while (copy.length < colCount) copy.push('');
+        return copy.map(escapeMarkdownCell);
+      });
+
+      // Align delimiter
+      let alignStr = '---';
+      if (align === 'left') alignStr = ':---';
+      else if (align === 'center') alignStr = ':---:';
+      else if (align === 'right') alignStr = '---:';
+
+      if (!pretty) {
+        const header = '| ' + normalized[0].join(' | ') + ' |';
+        const separator = '| ' + new Array(colCount).fill(alignStr).join(' | ') + ' |';
+        const body = normalized.slice(1).map(r => '| ' + r.join(' | ') + ' |').join('\n');
+        return header + '\n' + separator + (body ? '\n' + body : '');
+      }
+
+      // Pretty alignment: compute max widths
+      const colWidths = new Array(colCount).fill(3);
+      for (let c = 0; c < colCount; c++) {
+        for (let r = 0; r < normalized.length; r++) {
+          const len = normalized[r][c].length;
+          if (len > colWidths[c]) colWidths[c] = len;
+        }
+      }
+
+      const pad = (str, len) => str + ' '.repeat(Math.max(0, len - str.length));
+
+      const formatRow = (rowCells) => {
+        return '| ' + rowCells.map((cell, idx) => pad(cell, colWidths[idx])).join(' | ') + ' |';
+      };
+
+      const header = formatRow(normalized[0]);
+      const sepCells = colWidths.map(w => {
+        if (align === 'center') return ':' + '-'.repeat(Math.max(1, w - 2)) + ':';
+        if (align === 'right') return '-'.repeat(Math.max(2, w - 1)) + ':';
+        return ':' + '-'.repeat(Math.max(2, w - 1));
+      });
+      const separator = '| ' + sepCells.join(' | ') + ' |';
+      const body = normalized.slice(1).map(formatRow).join('\n');
+
+      return header + '\n' + separator + (body ? '\n' + body : '');
+    }
+
+    function buildHtml(rows) {
+      if (rows.length === 0) return '';
+      const hasHeader = headerEl.checked;
+      let out = '<table>\n';
+
+      if (hasHeader && rows.length > 0) {
+        out += '  <thead>\n    <tr>\n';
+        rows[0].forEach(cell => {
+          out += `      <th>${escapeHtml(cell)}</th>\n`;
+        });
+        out += '    </tr>\n  </thead>\n';
+      }
+
+      const bodyRows = hasHeader ? rows.slice(1) : rows;
+      if (bodyRows.length > 0) {
+        out += '  <tbody>\n';
+        bodyRows.forEach(row => {
+          out += '    <tr>\n';
+          row.forEach(cell => {
+            out += `      <td>${escapeHtml(cell)}</td>\n`;
+          });
+          out += '    </tr>\n';
+        });
+        out += '  </tbody>\n';
+      }
+
+      out += '</table>';
+      return out;
+    }
+
+    function escapeHtml(str) {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function update() {
+      const raw = inputEl.value.trim();
+      if (!raw) {
+        resultEl.textContent = '';
+        previewContainer.style.display = 'none';
+        statRows.textContent = '0';
+        statCols.textContent = '0';
+        return;
+      }
+
+      let delim = delimEl.value;
+      if (delim === 'auto') delim = detectDelim(raw);
+      if (delim === 'tab') delim = '\t';
+
+      const rows = parseRows(raw, delim);
+      if (rows.length === 0) {
+        resultEl.textContent = '';
+        return;
+      }
+
+      statRows.textContent = String(rows.length);
+      statCols.textContent = String(Math.max(...rows.map(r => r.length)));
+
+      const fmt = formatEl.value;
+      let outputText = '';
+      if (fmt === 'html') {
+        resultLabel.textContent = 'Generated HTML Table';
+        copyBtn.textContent = '📋 Copy HTML';
+        outputText = buildHtml(rows);
+      } else {
+        resultLabel.textContent = 'Generated Markdown Table';
+        copyBtn.textContent = '📋 Copy Markdown';
+        const isPretty = fmt === 'markdown-pretty';
+        outputText = buildMarkdown(rows, alignEl.value, isPretty);
+      }
+
+      resultEl.textContent = outputText;
+
+      // Render Visual Preview Table
+      previewContainer.style.display = 'block';
+      tablePreview.innerHTML = buildHtml(rows);
+    }
+
+    [inputEl, formatEl, alignEl, delimEl, headerEl, stripEl].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    update();
+  })();
+</script>
+
+<style>
+  .input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .code-input {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .option-field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .preview-section {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .preview-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table-responsive :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  .table-responsive :global(th),
+  .table-responsive :global(td) {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  .table-responsive :global(th) {
+    background: var(--color-surface-hover);
+    font-weight: 600;
+  }
+
+  .code-block {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+    white-space: pre;
+    overflow-x: auto;
+    max-height: 420px;
+    margin: 0;
+  }
+</style>

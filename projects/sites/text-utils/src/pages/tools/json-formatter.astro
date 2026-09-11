@@ -1,0 +1,351 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'json-formatter')!;
+const faq = [
+  { question: 'What does the JSON Formatter & Validator do?', answer: 'It parses raw or minified JSON, validates its syntax, highlights parse errors, and formats it cleanly with your choice of indentation (2 spaces, 4 spaces, or tabs).' },
+  { question: 'How does it pinpoint JSON syntax errors?', answer: 'When invalid JSON is entered, the tool catches the parser exception and displays the exact error message along with the character position so you can fix unquoted keys, trailing commas, or missing brackets instantly.' },
+  { question: 'Can I minify JSON to reduce file size?', answer: 'Yes. Switch the indent setting to "Minified / Compact" to strip all unnecessary whitespace, newlines, and indentation, making the payload ready for API requests and production config files.' },
+  { question: 'Can it sort JSON object keys alphabetically?', answer: 'Yes! Check "Sort object keys" to recursively order all dictionary keys from A to Z, making it easy to compare and diff JSON payloads between environments.' },
+  { question: 'Is my JSON uploaded to any server?', answer: 'Never. All JSON parsing and formatting executes strictly inside your browser using the native browser JavaScript JSON engine. No sensitive tokens, keys, or data leave your machine.' },
+  { question: 'Can it handle large JSON payloads?', answer: 'Yes, because it uses native JSON.parse() and JSON.stringify(), it comfortably handles multi-megabyte payloads in fractions of a second on modern devices.' },
+  { question: 'Why does JSON strictly require double quotes?', answer: 'The JSON standard (RFC 8259) mandates double quotes for all property names and string values. Single quotes or unquoted keys are invalid in standard JSON.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-header">
+      <label for="text-input" class="label">Paste JSON Input</label>
+      <div class="header-actions">
+        <button id="btn-sample" class="btn btn-secondary btn-sm" type="button">Load Sample</button>
+        <button id="btn-clear" class="btn btn-secondary btn-sm" type="button">Clear</button>
+      </div>
+    </div>
+
+    <textarea
+      id="text-input"
+      class="input code-input"
+      placeholder="Paste messy or minified JSON here: &#123;&quot;name&quot;:&quot;John&quot;&#125;..."
+      rows="9"
+      aria-label="Enter JSON to format and validate"
+    ></textarea>
+
+    <div class="options-grid">
+      <div class="option-field">
+        <label for="opt-indent">Indentation</label>
+        <select id="opt-indent" class="input">
+          <option value="2">2 Spaces</option>
+          <option value="4">4 Spaces</option>
+          <option value="tab">Tabs</option>
+          <option value="minify">Minify / Compact</option>
+        </select>
+      </div>
+
+      <div class="option-field checkbox-field">
+        <label class="checkbox-label">
+          <input type="checkbox" id="opt-sort" /> Sort Object Keys (A &rarr; Z)
+        </label>
+      </div>
+    </div>
+
+    <div class="status-box" id="status-box">
+      <span class="status-indicator" id="status-badge">Ready</span>
+      <span class="status-msg" id="status-msg">Enter JSON to format</span>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-size">0 B</span>
+        <span class="tool-stat-label">Output Size</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-lines">0</span>
+        <span class="tool-stat-label">Lines</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-keys">0</span>
+        <span class="tool-stat-label">Top Keys</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Formatted JSON Result</h2>
+        <button id="btn-copy" class="btn btn-primary" type="button">📋 Copy JSON</button>
+      </div>
+      <pre class="tool-result-content code-block" id="result"></pre>
+    </div>
+  </div>
+
+  <section class="tool-guide">
+    <h2>How to Format &amp; Validate JSON Online</h2>
+    <p>JSON (JavaScript Object Notation) is the undisputed lingua franca of modern web APIs, configuration files, and database exports. However, APIs often deliver minified one-line JSON without whitespace, making it nearly impossible to read or debug.</p>
+    <p>Paste any JSON payload into the box above. FixMyString instantly parses the structure, highlights syntax errors, and beautifies the output with clean indentation.</p>
+
+    <h3>Common JSON Errors &amp; How to Fix Them</h3>
+    <ul>
+      <li><strong>Trailing commas:</strong> Trailing commas like <code>[1, 2, 3,]</code> or <code>&#123;&quot;a&quot;: 1,&#125;</code> violate standard JSON. Remove the final comma before closing braces.</li>
+      <li><strong>Single quotes:</strong> JSON strictly requires double quotes (<code>&quot;key&quot;: &quot;value&quot;</code>). Single quotes like <code>&#39;key&#39;</code> will cause a parse error.</li>
+      <li><strong>Unquoted keys:</strong> JavaScript object literals allow unquoted keys like <code>&#123;name: &quot;John&quot;&#125;</code>, but valid JSON requires quotes around every property name.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/csv-to-json">CSV to JSON Converter</a> — Convert CSV files and spreadsheets to JSON arrays.</li>
+      <li><a href="/tools/string-encoder">String Encoder/Decoder</a> — Escape or unescape strings and Base64 payloads.</li>
+      <li><a href="/tools/sql-in-builder">SQL IN Clause Builder</a> — Turn lists of values into database queries.</li>
+    </ul>
+  </section>
+</ToolLayout>
+
+<script is:inline>
+  (function() {
+    const inputEl = document.getElementById('text-input');
+    const sampleBtn = document.getElementById('btn-sample');
+    const clearBtn = document.getElementById('btn-clear');
+    const indentEl = document.getElementById('opt-indent');
+    const sortEl = document.getElementById('opt-sort');
+    const resultEl = document.getElementById('result');
+    const copyBtn = document.getElementById('btn-copy');
+
+    const statusBadge = document.getElementById('status-badge');
+    const statusMsg = document.getElementById('status-msg');
+    const statusBox = document.getElementById('status-box');
+
+    const statSize = document.getElementById('stat-size');
+    const statLines = document.getElementById('stat-lines');
+    const statKeys = document.getElementById('stat-keys');
+
+    function sortObj(value) {
+      if (Array.isArray(value)) {
+        return value.map(sortObj);
+      } else if (value !== null && typeof value === 'object') {
+        const sorted = {};
+        Object.keys(value).sort().forEach(k => {
+          sorted[k] = sortObj(value[k]);
+        });
+        return sorted;
+      }
+      return value;
+    }
+
+    sampleBtn.addEventListener('click', () => {
+      inputEl.value = JSON.stringify({
+        project: "FixMyString",
+        version: "2.1.0",
+        features: ["zero-latency", "100% private", "cross-platform"],
+        stats: { totalTools: 15, activeUsers: 4500, uptime: 99.98 },
+        active: true
+      });
+      update();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      update();
+    });
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+
+    function update() {
+      const raw = inputEl.value.trim();
+      if (!raw) {
+        resultEl.textContent = '';
+        statusBox.className = 'status-box';
+        statusBadge.textContent = 'Ready';
+        statusBadge.className = 'status-indicator';
+        statusMsg.textContent = 'Enter JSON to format';
+        statSize.textContent = '0 B';
+        statLines.textContent = '0';
+        statKeys.textContent = '0';
+        return;
+      }
+
+      try {
+        let parsed = JSON.parse(raw);
+
+        if (sortEl.checked) {
+          parsed = sortObj(parsed);
+        }
+
+        const indentVal = indentEl.value;
+        let formatted = '';
+        if (indentVal === 'minify') {
+          formatted = JSON.stringify(parsed);
+        } else if (indentVal === 'tab') {
+          formatted = JSON.stringify(parsed, null, '\t');
+        } else {
+          formatted = JSON.stringify(parsed, null, Number(indentVal));
+        }
+
+        resultEl.textContent = formatted;
+
+        statusBox.className = 'status-box valid';
+        statusBadge.textContent = 'Valid JSON';
+        statusBadge.className = 'status-indicator badge-valid';
+        statusMsg.textContent = 'Syntax is correct';
+
+        // Stats
+        const bytes = new Blob([formatted]).size;
+        statSize.textContent = formatBytes(bytes);
+        statLines.textContent = String(formatted.split('\n').length);
+        if (parsed !== null && typeof parsed === 'object') {
+          statKeys.textContent = String(Object.keys(parsed).length);
+        } else {
+          statKeys.textContent = '1';
+        }
+      } catch (err) {
+        resultEl.textContent = '';
+        statusBox.className = 'status-box invalid';
+        statusBadge.textContent = 'Invalid JSON';
+        statusBadge.className = 'status-indicator badge-invalid';
+        statusMsg.textContent = err.message;
+
+        statSize.textContent = '0 B';
+        statLines.textContent = '0';
+        statKeys.textContent = '0';
+      }
+    }
+
+    [inputEl, indentEl, sortEl].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    update();
+  })();
+</script>
+
+<style>
+  .input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .code-input {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+  }
+
+  .options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .checkbox-field {
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-bottom: 6px;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .status-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-hover);
+    border: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+  }
+
+  .status-box.valid {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .status-box.invalid {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .status-indicator {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    background: var(--color-border);
+  }
+
+  .badge-valid {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .badge-invalid {
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  .code-block {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 480px;
+    overflow-y: auto;
+    margin: 0;
+  }
+</style>

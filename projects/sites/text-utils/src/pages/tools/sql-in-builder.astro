@@ -1,0 +1,340 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'sql-in-builder')!;
+const faq = [
+  { question: 'What does the SQL IN Clause Builder do?', answer: 'It takes a raw list of items (IDs, strings, SKUs, or codes copied from Excel, CSV, or logs) and converts them into a properly formatted SQL IN clause, like IN (\'val1\', \'val2\', \'val3\').' },
+  { question: 'Can I format both strings and numbers?', answer: 'Yes. Use "Single quotes" or "Double quotes" for strings/VARCHARs, or choose "None (Numbers)" for integer or numeric primary keys so no quotation marks are added.' },
+  { question: 'Can it automatically remove duplicate values?', answer: 'Yes! The "Remove duplicates" option is enabled by default. It deduplicates your list so your SQL query remains compact and runs efficiently.' },
+  { question: 'How do I paste values from Excel or Google Sheets?', answer: 'Simply select your column in Excel or Google Sheets, copy it (Ctrl+C), and paste it directly into the input box. The tool handles newlines and tabs automatically.' },
+  { question: 'Can I format output across multiple lines for readability?', answer: 'Yes. Choose the "Multiline" delimiter option to place each quoted value on a new indented line, perfect for version-controlled migration files and readable pull requests.' },
+  { question: 'Is my database data kept private?', answer: '100% private. All processing runs entirely inside your web browser via client-side JavaScript. No data is ever sent to any remote server.' },
+  { question: 'Does it support column prefixes like WHERE id IN (...) ?', answer: 'Yes. You can specify a column name like "user_id" or "order_status" to generate complete WHERE statements ready to paste into DBeaver, pgAdmin, MySQL Workbench, or DataGrip.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-header">
+      <label for="text-input" class="label">Input Items (one per line, comma, or pasted from Excel)</label>
+      <button id="btn-sample" class="btn btn-secondary btn-sm" type="button">Load Sample</button>
+    </div>
+
+    <textarea
+      id="text-input"
+      class="input"
+      placeholder="Paste values here (e.g. copied from Excel column or log file)..."
+      rows="7"
+      aria-label="Enter values to convert into SQL IN clause"
+    ></textarea>
+
+    <div class="options-grid">
+      <div class="option-field">
+        <label for="opt-quote">Quote Type</label>
+        <select id="opt-quote" class="input">
+          <option value="single">Single Quote ('value')</option>
+          <option value="double">Double Quote ("value")</option>
+          <option value="backtick">Backtick (`value`)</option>
+          <option value="none">None (Numbers / Integers)</option>
+        </select>
+      </div>
+
+      <div class="option-field">
+        <label for="opt-format">Clause Format</label>
+        <select id="opt-format" class="input">
+          <option value="in">IN (...)</option>
+          <option value="not_in">NOT IN (...)</option>
+          <option value="where">WHERE [column] IN (...)</option>
+          <option value="list_only">Comma List Only (a, b, c)</option>
+        </select>
+      </div>
+
+      <div class="option-field" id="col-name-container" style="display: none;">
+        <label for="col-name">Column Name</label>
+        <input type="text" id="col-name" class="input" placeholder="e.g. user_id" value="id" />
+      </div>
+
+      <div class="option-field">
+        <label for="opt-layout">Layout</label>
+        <select id="opt-layout" class="input">
+          <option value="single_line">Single Line</option>
+          <option value="multiline">Multiline (indented)</option>
+        </select>
+      </div>
+
+      <div class="option-field">
+        <label for="opt-case">Letter Case</label>
+        <select id="opt-case" class="input">
+          <option value="keep">Keep Original</option>
+          <option value="upper">UPPERCASE</option>
+          <option value="lower">lowercase</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-dedupe" checked /> Remove duplicates
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-trim" checked /> Trim spaces
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="opt-empty" checked /> Skip empty items
+      </label>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-total">0</span>
+        <span class="tool-stat-label">Total Items</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-unique">0</span>
+        <span class="tool-stat-label">Unique Items</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-removed">0</span>
+        <span class="tool-stat-label">Duplicates Removed</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2>Formatted SQL Output</h2>
+        <button id="btn-copy" class="btn btn-primary" type="button">📋 Copy SQL</button>
+      </div>
+      <div class="tool-result-content code-block" id="result"></div>
+    </div>
+  </div>
+
+  <section class="tool-guide">
+    <h2>How to Use the SQL IN Clause Builder</h2>
+    <p>Every backend developer, data analyst, and database administrator has encountered this problem: you receive a list of 50 customer IDs or email addresses in an Excel spreadsheet, Slack message, or ticket, and you need to query them in PostgreSQL, MySQL, SQL Server, or Oracle.</p>
+    <p>Instead of manually typing quotes and commas for dozens of values, paste your raw column into the input area. The tool instantly generates a valid, syntactically clean SQL <code>IN (...)</code> or <code>NOT IN (...)</code> clause.</p>
+
+    <h3>Supported Features &amp; Options</h3>
+    <ul>
+      <li><strong>Quotes:</strong> Toggle between single quotes (standard SQL strings), double quotes, backticks, or none (for numeric IDs like <code>101, 102, 103</code>).</li>
+      <li><strong>Column Prepends:</strong> Switch format to <code>WHERE [column] IN (...)</code> to generate a complete WHERE clause ready for testing in your SQL client.</li>
+      <li><strong>Multiline Formatting:</strong> Formats large lists with clean indentation so your SQL queries look tidy in code repositories.</li>
+      <li><strong>Deduplication:</strong> Automatically strips redundant entries to keep SQL execution plans clean and avoid query size limits.</li>
+    </ul>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/csv-to-json">CSV to JSON Converter</a> — Convert tabular data directly into JSON format.</li>
+      <li><a href="/tools/delimiter-converter">List &amp; Delimiter Converter</a> — Convert between any list delimiters and separators.</li>
+      <li><a href="/tools/duplicate-remover">Duplicate Line Remover</a> — Deduplicate generic text lists line by line.</li>
+    </ul>
+  </section>
+</ToolLayout>
+
+<script is:inline>
+  (function() {
+    const inputEl = document.getElementById('text-input');
+    const sampleBtn = document.getElementById('btn-sample');
+    const quoteEl = document.getElementById('opt-quote');
+    const formatEl = document.getElementById('opt-format');
+    const colContainer = document.getElementById('col-name-container');
+    const colInput = document.getElementById('col-name');
+    const layoutEl = document.getElementById('opt-layout');
+    const caseEl = document.getElementById('opt-case');
+    const dedupeEl = document.getElementById('opt-dedupe');
+    const trimEl = document.getElementById('opt-trim');
+    const emptyEl = document.getElementById('opt-empty');
+    const resultEl = document.getElementById('result');
+    const copyBtn = document.getElementById('btn-copy');
+
+    const statTotal = document.getElementById('stat-total');
+    const statUnique = document.getElementById('stat-unique');
+    const statRemoved = document.getElementById('stat-removed');
+
+    sampleBtn.addEventListener('click', () => {
+      inputEl.value = "USR_9821\nUSR_1044\nUSR_3419\nUSR_1044\nUSR_7820\nUSR_5502";
+      update();
+    });
+
+    formatEl.addEventListener('change', () => {
+      if (formatEl.value === 'where') {
+        colContainer.style.display = 'block';
+      } else {
+        colContainer.style.display = 'none';
+      }
+      update();
+    });
+
+    function update() {
+      const raw = inputEl.value;
+      if (!raw) {
+        resultEl.textContent = '';
+        statTotal.textContent = '0';
+        statUnique.textContent = '0';
+        statRemoved.textContent = '0';
+        return;
+      }
+
+      // Split by newline, comma, tab, or carriage return
+      let tokens = raw.split(/[\r\n,\t]+/);
+
+      if (trimEl.checked) {
+        tokens = tokens.map(t => t.trim());
+      }
+      if (emptyEl.checked) {
+        tokens = tokens.filter(t => t.length > 0);
+      }
+
+      const totalCount = tokens.length;
+      let finalItems = tokens;
+
+      if (dedupeEl.checked) {
+        const seen = new Set();
+        finalItems = [];
+        for (const item of tokens) {
+          const key = item.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            finalItems.push(item);
+          }
+        }
+      }
+
+      const uniqueCount = finalItems.length;
+      statTotal.textContent = String(totalCount);
+      statUnique.textContent = String(uniqueCount);
+      statRemoved.textContent = String(Math.max(0, totalCount - uniqueCount));
+
+      // Case conversion
+      const c = caseEl.value;
+      if (c === 'upper') {
+        finalItems = finalItems.map(i => i.toUpperCase());
+      } else if (c === 'lower') {
+        finalItems = finalItems.map(i => i.toLowerCase());
+      }
+
+      // Quotation
+      const qType = quoteEl.value;
+      let quotedItems = finalItems.map(item => {
+        if (qType === 'single') return `'${item.replace(/'/g, "''")}'`;
+        if (qType === 'double') return `"${item.replace(/"/g, '""')}"`;
+        if (qType === 'backtick') return `\`${item}\``;
+        return item;
+      });
+
+      // Delimiter / layout
+      const isMulti = layoutEl.value === 'multiline';
+      let joined = '';
+      if (isMulti) {
+        joined = '\n  ' + quotedItems.join(',\n  ') + '\n';
+      } else {
+        joined = quotedItems.join(', ');
+      }
+
+      // Clause formatting
+      const fmt = formatEl.value;
+      let output = '';
+      if (fmt === 'list_only') {
+        output = isMulti ? joined.trim() : joined;
+      } else if (fmt === 'not_in') {
+        output = `NOT IN (${joined})`;
+      } else if (fmt === 'where') {
+        const col = (colInput.value || 'id').trim();
+        output = `WHERE ${col} IN (${joined})`;
+      } else {
+        output = `IN (${joined})`;
+      }
+
+      resultEl.textContent = output;
+    }
+
+    [inputEl, quoteEl, layoutEl, caseEl, dedupeEl, trimEl, emptyEl, colInput].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = original; }, 1800);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    update();
+  })();
+</script>
+
+<style>
+  .input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .option-field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .code-block {
+    font-family: var(--font-mono, monospace);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+</style>

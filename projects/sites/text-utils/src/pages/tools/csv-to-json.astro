@@ -1,0 +1,456 @@
+---
+import '@adsites/ui-kit/styles/global.css';
+import '@adsites/ui-kit/styles/tool-page.css';
+import ToolLayout from '@adsites/ui-kit/ToolLayout.astro';
+import { SITE, TOOLS } from '../../config';
+
+const tool = TOOLS.find(t => t.slug === 'csv-to-json')!;
+const faq = [
+  { question: 'How do I convert CSV to JSON?', answer: 'Paste your CSV or spreadsheet table into the input area. The tool automatically detects column headers and builds an array of clean JSON objects instantly.' },
+  { question: 'Can I copy and paste directly from Microsoft Excel or Google Sheets?', answer: 'Yes! When you copy cells in Excel or Sheets, the clipboard contains Tab-Separated Values (TSV). Simply leave the delimiter on "Auto-detect" or choose "Tab", and your spreadsheet data will convert immediately.' },
+  { question: 'Does it support semicolon (;) separated files from European Excel?', answer: 'Yes! Excel in many European countries exports CSV files using semicolons (;) because commas are used as decimal separators. Select "Semicolon (;)" or let auto-detect handle it.' },
+  { question: 'Can it convert JSON back to CSV?', answer: 'Yes! Toggle the mode from "CSV &rarr; JSON" to "JSON &rarr; CSV" to generate a downloadable, RFC 4180 compliant CSV file from any JSON array of objects.' },
+  { question: 'How are numbers and boolean values handled?', answer: 'By default, "Parse numbers & booleans" is enabled, turning numeric strings like "42" into numbers and "true"/"false" into boolean values. Uncheck it if you want all fields preserved as raw strings.' },
+  { question: 'Is my data secure?', answer: 'Yes, 100%. No data is ever sent to any remote server or third-party service. The entire conversion happens locally in your browser memory.' },
+  { question: 'Does it handle commas inside quoted fields?', answer: 'Yes. The built-in parser follows standard RFC 4180 rules, correctly parsing values like "Doe, John" or multiline cells wrapped in quotation marks.' }
+];
+---
+
+<ToolLayout
+  title={tool.name}
+  description={tool.description}
+  siteName={SITE.name}
+  siteUrl={SITE.url}
+  tools={TOOLS}
+  faq={faq}
+>
+  <div class="tool-header">
+    <h1>{tool.icon} {tool.name}</h1>
+    <p class="tool-description">{tool.description}</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-header">
+      <div class="mode-selector">
+        <button id="mode-csv-json" class="btn btn-sm btn-primary" type="button">CSV &rarr; JSON</button>
+        <button id="mode-json-csv" class="btn btn-sm btn-secondary" type="button">JSON &rarr; CSV</button>
+      </div>
+      <div class="header-actions">
+        <button id="btn-sample" class="btn btn-secondary btn-sm" type="button">Load Sample</button>
+        <button id="btn-clear" class="btn btn-secondary btn-sm" type="button">Clear</button>
+      </div>
+    </div>
+
+    <textarea
+      id="text-input"
+      class="input code-input"
+      placeholder="Paste CSV, TSV (from Excel), or JSON here..."
+      rows="9"
+      aria-label="Enter data to convert"
+    ></textarea>
+
+    <div class="options-grid">
+      <div class="option-field" id="delimiter-field">
+        <label for="opt-delimiter">Delimiter</label>
+        <select id="opt-delimiter" class="input">
+          <option value="auto">Auto-detect (Comma, Tab, Semicolon)</option>
+          <option value=",">Comma (,)</option>
+          <option value="tab">Tab (\t - Excel / Sheets)</option>
+          <option value=";">Semicolon (;) - European Excel</option>
+          <option value="|">Pipe (|)</option>
+        </select>
+      </div>
+
+      <div class="option-field" id="json-indent-field">
+        <label for="opt-indent">JSON Format</label>
+        <select id="opt-indent" class="input">
+          <option value="2">Pretty (2 Spaces)</option>
+          <option value="4">Pretty (4 Spaces)</option>
+          <option value="minify">Minified Array</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <label class="checkbox-label" id="label-header">
+        <input type="checkbox" id="opt-header" checked /> First row is header
+      </label>
+      <label class="checkbox-label" id="label-parse-types">
+        <input type="checkbox" id="opt-parse-types" checked /> Parse numbers &amp; booleans
+      </label>
+    </div>
+
+    <div class="tool-stats">
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-rows">0</span>
+        <span class="tool-stat-label">Records / Rows</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-cols">0</span>
+        <span class="tool-stat-label">Columns</span>
+      </div>
+      <div class="tool-stat">
+        <span class="tool-stat-value" id="stat-bytes">0 B</span>
+        <span class="tool-stat-label">Output Size</span>
+      </div>
+    </div>
+
+    <div class="tool-result">
+      <div class="tool-result-header">
+        <h2 id="result-title">Converted JSON Result</h2>
+        <div class="action-buttons">
+          <button id="btn-download" class="btn btn-secondary" type="button">💾 Download File</button>
+          <button id="btn-copy" class="btn btn-primary" type="button">📋 Copy Output</button>
+        </div>
+      </div>
+      <pre class="tool-result-content code-block" id="result"></pre>
+    </div>
+  </div>
+
+  <section class="tool-guide">
+    <h2>Bidirectional CSV and JSON Converter</h2>
+    <p>Data interchange often requires converting between flat, tabular spreadsheet representations (CSV, TSV) and nested tree structures (JSON). FixMyString bridges this gap instantly in both directions.</p>
+
+    <h3>Why Semicolon Delimiters Matter</h3>
+    <p>In Germany, France, Italy, Spain, and many Eastern European countries, Microsoft Excel defaults to semicolon delimiters (<code>;</code>) rather than commas. This tool natively supports semicolon-separated files, ensuring compatibility with corporate spreadsheets across global teams.</p>
+
+    <h3>How to Paste from Excel</h3>
+    <p>You do not need to save or export a file from Excel first. Simply select any range of cells in Excel, press <kbd>Ctrl+C</kbd> (or <kbd>Cmd+C</kbd> on macOS), and paste directly into the box. FixMyString recognizes clipboard tab characters and parses columns seamlessly.</p>
+
+    <h3>Related Tools</h3>
+    <ul>
+      <li><a href="/tools/markdown-table-generator">Excel to Markdown Table</a> — Convert spreadsheets into documentation tables.</li>
+      <li><a href="/tools/json-formatter">JSON Formatter &amp; Validator</a> — Beautify and inspect JSON responses.</li>
+      <li><a href="/tools/sql-in-builder">SQL IN Clause Builder</a> — Turn column lists into database queries.</li>
+    </ul>
+  </section>
+</ToolLayout>
+
+<script is:inline>
+  (function() {
+    let mode = 'csv-to-json';
+
+    const modeCsvBtn = document.getElementById('mode-csv-json');
+    const modeJsonBtn = document.getElementById('mode-json-csv');
+    const inputEl = document.getElementById('text-input');
+    const sampleBtn = document.getElementById('btn-sample');
+    const clearBtn = document.getElementById('btn-clear');
+    const delimiterEl = document.getElementById('opt-delimiter');
+    const indentEl = document.getElementById('opt-indent');
+    const headerEl = document.getElementById('opt-header');
+    const parseTypesEl = document.getElementById('opt-parse-types');
+    const resultEl = document.getElementById('result');
+    const resultTitle = document.getElementById('result-title');
+    const copyBtn = document.getElementById('btn-copy');
+    const downloadBtn = document.getElementById('btn-download');
+
+    const statRows = document.getElementById('stat-rows');
+    const statCols = document.getElementById('stat-cols');
+    const statBytes = document.getElementById('stat-bytes');
+
+    function setMode(newMode) {
+      mode = newMode;
+      if (mode === 'csv-to-json') {
+        modeCsvBtn.className = 'btn btn-sm btn-primary';
+        modeJsonBtn.className = 'btn btn-sm btn-secondary';
+        resultTitle.textContent = 'Converted JSON Result';
+        document.getElementById('label-parse-types').style.display = 'flex';
+        document.getElementById('json-indent-field').style.display = 'flex';
+      } else {
+        modeCsvBtn.className = 'btn btn-sm btn-secondary';
+        modeJsonBtn.className = 'btn btn-sm btn-primary';
+        resultTitle.textContent = 'Converted CSV Result';
+        document.getElementById('label-parse-types').style.display = 'none';
+        document.getElementById('json-indent-field').style.display = 'none';
+      }
+      update();
+    }
+
+    modeCsvBtn.addEventListener('click', () => setMode('csv-to-json'));
+    modeJsonBtn.addEventListener('click', () => setMode('json-to-csv'));
+
+    sampleBtn.addEventListener('click', () => {
+      if (mode === 'csv-to-json') {
+        inputEl.value = 'id,name,department,salary,active\n101,Sarah Connor,Security,85000,true\n102,John Doe,Engineering,92000,true\n103,Ellen Ripley,Operations,110000,false';
+      } else {
+        inputEl.value = JSON.stringify([
+          { id: 101, name: "Sarah Connor", department: "Security", salary: 85000, active: true },
+          { id: 102, name: "John Doe", department: "Engineering", salary: 92000, active: true },
+          { id: 103, name: "Ellen Ripley", department: "Operations", salary: 110000, active: false }
+        ], null, 2);
+      }
+      update();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      update();
+    });
+
+    function detectDelimiter(text) {
+      const firstLine = text.split('\n')[0] || '';
+      const commaCount = (firstLine.match(/,/g) || []).length;
+      const tabCount = (firstLine.match(/\t/g) || []).length;
+      const semiCount = (firstLine.match(/;/g) || []).length;
+      const pipeCount = (firstLine.match(/\|/g) || []).length;
+
+      const max = Math.max(commaCount, tabCount, semiCount, pipeCount);
+      if (max === 0) return ',';
+      if (max === tabCount) return '\t';
+      if (max === semiCount) return ';';
+      if (max === pipeCount) return '|';
+      return ',';
+    }
+
+    function parseCSV(text, delimiter) {
+      const rows = [];
+      let row = [];
+      let token = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            token += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === delimiter && !inQuotes) {
+          row.push(token);
+          token = '';
+        } else if ((char === '\r' || char === '\n') && !inQuotes) {
+          if (char === '\r' && nextChar === '\n') i++;
+          row.push(token);
+          token = '';
+          if (row.length > 1 || row[0] !== '') {
+            rows.push(row);
+          }
+          row = [];
+        } else {
+          token += char;
+        }
+      }
+
+      if (token || row.length > 0) {
+        row.push(token);
+        if (row.length > 1 || row[0] !== '') {
+          rows.push(row);
+        }
+      }
+
+      return rows;
+    }
+
+    function castValue(val) {
+      const trimmed = val.trim();
+      if (!trimmed) return val;
+      if (trimmed === 'true') return true;
+      if (trimmed === 'false') return false;
+      if (trimmed === 'null') return null;
+      if (!isNaN(trimmed) && !isNaN(parseFloat(trimmed)) && !trimmed.startsWith('0') || trimmed === '0') {
+        return Number(trimmed);
+      }
+      return val;
+    }
+
+    function update() {
+      const raw = inputEl.value.trim();
+      if (!raw) {
+        resultEl.textContent = '';
+        statRows.textContent = '0';
+        statCols.textContent = '0';
+        statBytes.textContent = '0 B';
+        return;
+      }
+
+      try {
+        if (mode === 'csv-to-json') {
+          let delim = delimiterEl.value;
+          if (delim === 'auto') delim = detectDelimiter(raw);
+          if (delim === 'tab') delim = '\t';
+
+          const rows = parseCSV(raw, delim);
+          if (rows.length === 0) {
+            resultEl.textContent = '[]';
+            return;
+          }
+
+          const hasHeader = headerEl.checked;
+          const shouldParse = parseTypesEl.checked;
+
+          let jsonOutput;
+          if (hasHeader && rows.length > 1) {
+            const headers = rows[0].map(h => h.trim());
+            const dataRows = rows.slice(1);
+            jsonOutput = dataRows.map(row => {
+              const obj = {};
+              headers.forEach((header, index) => {
+                const rawVal = row[index] !== undefined ? row[index] : '';
+                obj[header || `col_${index + 1}`] = shouldParse ? castValue(rawVal) : rawVal;
+              });
+              return obj;
+            });
+            statRows.textContent = String(dataRows.length);
+            statCols.textContent = String(headers.length);
+          } else {
+            jsonOutput = rows.map(r => shouldParse ? r.map(castValue) : r);
+            statRows.textContent = String(rows.length);
+            statCols.textContent = String(rows[0]?.length || 0);
+          }
+
+          const indentChoice = indentEl.value;
+          const formatted = indentChoice === 'minify'
+            ? JSON.stringify(jsonOutput)
+            : JSON.stringify(jsonOutput, null, Number(indentChoice));
+
+          resultEl.textContent = formatted;
+          const bytes = new Blob([formatted]).size;
+          statBytes.textContent = bytes < 1024 ? bytes + ' B' : (bytes / 1024).toFixed(1) + ' KB';
+
+        } else {
+          // JSON to CSV
+          const parsed = JSON.parse(raw);
+          let delim = delimiterEl.value;
+          if (delim === 'auto' || delim === 'tab') delim = '\t';
+
+          let rows = [];
+          if (Array.isArray(parsed)) {
+            if (parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null) {
+              const keys = Array.from(new Set(parsed.flatMap(obj => Object.keys(obj))));
+              rows.push(keys);
+              parsed.forEach(obj => {
+                rows.push(keys.map(k => (obj[k] !== undefined && obj[k] !== null ? String(obj[k]) : '')));
+              });
+            } else {
+              rows = parsed.map(item => [String(item)]);
+            }
+          } else if (typeof parsed === 'object' && parsed !== null) {
+            rows.push(Object.keys(parsed));
+            rows.push(Object.values(parsed).map(v => String(v)));
+          }
+
+          const escapeCell = (val) => {
+            if (val.includes(delim) || val.includes('"') || val.includes('\n')) {
+              return `"${val.replace(/"/g, '""')}"`;
+            }
+            return val;
+          };
+
+          const csvLines = rows.map(r => r.map(escapeCell).join(delim)).join('\n');
+          resultEl.textContent = csvLines;
+
+          statRows.textContent = String(Math.max(0, rows.length - 1));
+          statCols.textContent = String(rows[0]?.length || 0);
+          const bytes = new Blob([csvLines]).size;
+          statBytes.textContent = bytes < 1024 ? bytes + ' B' : (bytes / 1024).toFixed(1) + ' KB';
+        }
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    }
+
+    [inputEl, delimiterEl, indentEl, headerEl, parseTypesEl].forEach(el => {
+      el.addEventListener('input', update);
+      el.addEventListener('change', update);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const text = resultEl.textContent;
+      if (!text) return;
+      const isJson = mode === 'csv-to-json';
+      const blob = new Blob([text], { type: isJson ? 'application/json' : 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = isJson ? 'converted_data.json' : 'converted_data.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    update();
+  })();
+</script>
+
+<style>
+  .input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .mode-selector, .header-actions, .action-buttons {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .code-input {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .option-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .option-field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .code-block {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 450px;
+    overflow-y: auto;
+    margin: 0;
+  }
+</style>

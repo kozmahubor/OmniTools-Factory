@@ -97,6 +97,46 @@ export const TOOLS: ToolMeta[] = [
     category: 'Encode',
     keywords: ['html encode', 'url encode', 'base64 encode', 'unicode escape'],
   },
+  {
+    name: 'SQL IN Clause Builder',
+    slug: 'sql-in-builder',
+    icon: '🗄️',
+    description: 'Convert lists of IDs, codes, or strings into clean SQL IN (...) clauses instantly.',
+    category: 'Developer',
+    keywords: ['sql in clause', 'list to sql', 'sql query builder', 'sql in statement'],
+  },
+  {
+    name: 'JSON Formatter & Validator',
+    slug: 'json-formatter',
+    icon: '📦',
+    description: 'Format, beautify, validate, and minify JSON data with line numbers and syntax check.',
+    category: 'Developer',
+    keywords: ['json formatter', 'json validator', 'beautify json', 'minify json', 'pretty json'],
+  },
+  {
+    name: 'CSV to JSON Converter',
+    slug: 'csv-to-json',
+    icon: '📊',
+    description: 'Convert CSV and Excel spreadsheets into JSON arrays or export JSON back to CSV.',
+    category: 'Data',
+    keywords: ['csv to json', 'excel to json', 'json to csv', 'tsv to json', 'spreadsheet to json'],
+  },
+  {
+    name: 'Excel to Markdown Table',
+    slug: 'markdown-table-generator',
+    icon: '📋',
+    description: 'Paste from Excel, Sheets, or CSV to generate clean, formatted Markdown tables.',
+    category: 'Data',
+    keywords: ['excel to markdown', 'markdown table generator', 'csv to markdown', 'sheets to markdown'],
+  },
+  {
+    name: 'List & Delimiter Converter',
+    slug: 'delimiter-converter',
+    icon: '⚡',
+    description: 'Convert column lists to comma-separated text, switch delimiters, and wrap items.',
+    category: 'Transform',
+    keywords: ['delimiter converter', 'column to comma', 'list separator', 'comma separated list'],
+  },
 ];
 
 export const TOOL_CATEGORIES = [...new Set(TOOLS.map((t) => t.category))];
